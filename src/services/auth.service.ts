@@ -1,6 +1,6 @@
 import { LeanDocument } from 'mongoose';
 
-import { I_UserDocument, createUser, getUserByEmail, getUserById, getUserBySessionToken } from '../models/authentication/user.model';
+import { I_UserDocument, createUser, getUserByEmail, getUserBySessionToken } from '../models/authentication/user.model';
 import { UserLoggedIn, UserLogin, UserToRegister, validateUserLogin,
         validateUserToRegister } from '../interfaces/user.interface';
 import { authentication, random } from '../helper';

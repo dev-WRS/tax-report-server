@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
+const saltRounds = 8
+
 export interface I_UserDocument extends mongoose.Document {
     email: string;
     name: string;
@@ -38,7 +40,8 @@ export const getUsers = () => UserModel.find();
 export const getUserByEmail = (email: string) => UserModel.findOne({ email });
 
 export const getUserBySessionToken = (sessionToken: string) => {
-   return UserModel.findOne({'authentication.sessionToken': sessionToken});
+  const user = UserModel.findOne({'authentication.sessionToken': sessionToken});
+  return user;
 };
 
 export const getUserById = (id: string) => UserModel.findById(id);

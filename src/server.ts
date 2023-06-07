@@ -7,9 +7,9 @@ import compression from 'compression';
 import mongoose from 'mongoose';
 
 import config from './config/config';
+import logging from './config/logging';
 import authRouter from './routes/auth.route';
 import mboxFilesHandlerRoute from './routes/mboxFilesHandler.route';
-
 
 const NAMESPACE = 'Server';
 
@@ -31,16 +31,6 @@ mongoose.connect(MONGO_URL, {useNewUrlParser: true});
 mongoose.connection.on('error', (error: Error) => {
     console.log(error);
 })
-
-const db = 'mongodb://localhost:27017/wrs_tax_report';
-const mongoose = require('mongoose');
-mongoose.connect(db, (err: string) => {
-    if (err) {
-        console.error('Error!' + err)
-    } else {
-        console.log('Connected to mongodb')
-    }
-});
 
 /** Logging the request */
 app.use((req, res, next) => {
