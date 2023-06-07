@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const saltRounds = 8
-
 export interface I_UserDocument extends mongoose.Document {
     email: string;
     name: string;

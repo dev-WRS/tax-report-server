@@ -6,7 +6,6 @@ import * as userServices from '../../services/auth.service';
 import {UserLogin, UserToRegister} from '../../interfaces/user.interface';
 import logging from '../../utils/logging';
 
-const NAMESPACE = 'Auth Controller';
 
 const login = async (req: Request, res: Response) => {
     try {
@@ -33,7 +32,7 @@ const register = async (req: Request, res: Response) => {
         logging.error(NAMESPACE, `Error occurred while registering user: ${errorMessage}`);
         return res.status(400).send({ message: errorMessage });
     }
-};
+}
 
 const isLoggedIn = async (req: Request, res: Response) => {
     try {
