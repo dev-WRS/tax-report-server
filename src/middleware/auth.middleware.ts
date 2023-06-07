@@ -1,25 +1,24 @@
-import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { merge } from 'lodash';
 
-export const SECRET_KEY: Secret = 'your-secret-key-here';
+import { getUserBySessionToken } from '../models/authentication/user.model';
 
-export interface CustomRequest extends Request {
- token: string | JwtPayload;
-}
-
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
  try {
-   const token = req.header('Authorization')?.replace('Bearer ', '');
+  const sessionToken = req.cookies['WRS-AUTH'];
+  if (!sessionToken) {
+    return res.status(403).send('Please authenticate');
+  }
 
-   if (!token) {
-     throw new Error();
-   }
+  const existingUser = await getUserBySessionToken(sessionToken);
+  if (!existingUser) {
+    return res.status(403).send('Please authenticate');
+  }
 
-   const decoded = jwt.verify(token, SECRET_KEY);
-   (req as CustomRequest).token = decoded;
+  merge(req, { identity: existingUser });
 
-   next();
+  return next();
  } catch (err) {
-   res.status(401).send('Please authenticate');
+   return res.status(401).send('Please authenticate');
  }
 };

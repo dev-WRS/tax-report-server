@@ -1,47 +1,102 @@
-import { DocumentDefinition } from 'mongoose';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { LeanDocument } from 'mongoose';
 
-import { I_UserDocument, UserModel } from '../models/authentication/user.model';
-import { SECRET_KEY } from '../middleware/auth.middleware';
+import { I_UserDocument, createUser, getUserByEmail, getUserById, getUserBySessionToken } from '../models/authentication/user.model';
+import { UserLoggedIn, UserLogin, UserToRegister, validateUserLogin,
+        validateUserToRegister } from '../interfaces/user.interface';
+import { authentication, random } from '../helper';
 
-const db = 'mongodb://localhost:27017/wrs_tax_report';
-const mongoose = require('mongoose');
-mongoose.connect(db, (err: string) => {
-    if (err) {
-        console.error('Error!' + err)
-    } else {
-        console.log('Connected to mongodb')
-    }
-});
+export async function register(user: UserToRegister): Promise<LeanDocument<I_UserDocument>> {
+    try {
+        const errors = validateUserToRegister(user);
 
-export async function register(user: DocumentDefinition<I_UserDocument>): Promise<void> {
-    try { 
-        await UserModel.create(user);
+        if (!errors) {
+            throw new Error('Validation error');
+        }
+
+        const existingUser = await getUserByEmail(user.email);
+
+        if (existingUser) {
+            throw new Error('Already exist user with this email');
+        }
+
+        const salt = random();
+
+        const newUser = await createUser({
+            email: user.email,
+            name: user.name,
+            authentication: {
+                salt: salt,
+                password: authentication(salt, user.password),
+            },
+            role: user.role
+        })
+
+        return newUser;
     } catch (err) {
         throw err;
     }
 }
 
-export async function login(user: DocumentDefinition<I_UserDocument>) {
+export async function login(user: UserLogin): Promise<UserLoggedIn> {
     try {
-        const foundUser = await UserModel.findOne({ email: user.email });
+        if (!validateUserLogin) {
+            throw new Error('Validation error');
+        }
+
+        const foundUser = await getUserByEmail(user.email)
+                                .select('+authentication.salt +authentication.password');
 
         if (!foundUser) {
             throw new Error('User not exist width this email');
         }
 
-        const isMatch = bcrypt.compareSync(user.password, foundUser.password);
+        const expectedHash = authentication(foundUser.authentication.salt, user.password);
 
-        if (isMatch) {
-            const token = jwt.sign({ _id: foundUser._id?.toString(), name: foundUser.name }, SECRET_KEY, {
-                expiresIn: '2 hours',
-              });
-         
-              return { user: foundUser, token: token };
-        } else {
+        if (foundUser.authentication.password !== expectedHash) {
             throw new Error('Password is not correct');
         }
+
+        const salt = random();
+        foundUser.authentication.sessionToken = authentication(salt, foundUser._id.toString());
+
+        await foundUser.save();
+        return {
+            email: foundUser.email, 
+            name: foundUser.name, 
+            role: foundUser.role, 
+            token: foundUser.authentication.sessionToken,        
+        };        
+    } catch (err) {
+        throw err;
+    }
+}
+
+export async function logout(sessionToken: string): Promise<boolean> {
+    try {
+        const foundUser = await getUserBySessionToken(sessionToken);
+
+        if (!foundUser) {
+            throw new Error('User is not logged in');
+        }
+
+        foundUser.authentication.sessionToken = '';
+        await foundUser.save();
+
+        return true;
+    } catch (err) {
+        throw err;
+    }
+}
+
+export async function isLoggedIn(sessionToken: string): Promise<boolean> {
+    try {
+        const foundUser = await getUserBySessionToken(sessionToken);
+
+        if (!foundUser) {
+            throw new Error('User is not logged in');
+        }
+
+        return true;
     } catch (err) {
         throw err;
     }
