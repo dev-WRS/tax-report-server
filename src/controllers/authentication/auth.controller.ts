@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 
-import logging from '../../config/logging';
+
 import { getErrorMessage } from '../../utils/error.utils';
 import * as userServices from '../../services/auth.service';
 import {UserLogin, UserToRegister} from '../../interfaces/user.interface';
+import logging from '../../utils/logging';
 
 const NAMESPACE = 'Auth Controller';
 
