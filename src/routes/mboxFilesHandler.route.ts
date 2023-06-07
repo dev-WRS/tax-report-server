@@ -2,7 +2,7 @@ import express from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
-import logging from '../config/logging';
+import logging from '../utils/logging';
 
 import mboxFilesHandlerController from '../controllers/file-management/mboxFilesHandler.controller';
 import { auth } from '../middleware/auth.middleware';

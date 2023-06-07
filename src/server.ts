@@ -4,7 +4,7 @@ import cors from 'cors';
 import http from 'http';
 
 import config from './config/config';
-import logging from './config/logging';
+import logging from './utils/logging';
 import authRouter from './routes/auth.route';
 import mboxFilesHandlerRoute from './routes/mboxFilesHandler.route';
 
@@ -13,6 +13,16 @@ const NAMESPACE = 'Server';
 const router = express();
 
 router.use(cors());
+
+const db = 'mongodb://localhost:27017/wrs_tax_report';
+const mongoose = require('mongoose');
+mongoose.connect(db, (err: string) => {
+    if (err) {
+        console.error('Error!' + err)
+    } else {
+        console.log('Connected to mongodb')
+    }
+});
 
 /** Logging the request */
 router.use((req, res, next) => {

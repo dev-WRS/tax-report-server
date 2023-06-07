@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-
-const saltRounds = 8
+import ConstantNumber from "../../constants/number.constant";
 
 export interface I_UserDocument extends mongoose.Document {
     email: string;
@@ -13,14 +12,14 @@ export interface I_UserDocument extends mongoose.Document {
 const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
     email: { type: String, required: true, unique: true},
     name: { type: String, required: true, unique: true},
-    password: { type: String, required: true, minlength: 6 },
+    password: { type: String, required: true, minlength: ConstantNumber.PASSWORD_MIN_LENGTH },
     role: { type: String, enum: ['admin', 'user'], default: 'user' }
 }); 
 
 UserSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
-      user.password = await bcrypt.hash(user.password, saltRounds);
+      user.password = await bcrypt.hash(user.password, ConstantNumber.PASSWORD_MIN_LENGTH);
     }
     next();
 });
