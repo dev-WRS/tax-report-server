@@ -1,12 +1,14 @@
 export interface UserToRegister {
-    name: string;
+    fullName: string;
+    userName: string;
     email: string;
     password: string;
     role: 'admin' | 'user' | undefined;
 }
 
 export interface UserRegistered {
-    name: string;
+    fullName: string;
+    userName: string;
     email: string;
     role: 'admin' | 'user' | undefined;
 }
@@ -18,13 +20,14 @@ export interface UserLogin {
 
 export interface UserLoggedIn{
     email: string;
-    name: string;
+    fullName: string;
+    userName: string;
     role: 'admin' | 'user' | undefined;
     token: string;
 }
 
 export function validateUserToRegister(user: UserToRegister): boolean {
-    return user.name !== undefined && user.email !== undefined && user.password !== undefined;
+    return user.userName !== undefined && user.fullName !== undefined && user.email !== undefined && user.password !== undefined;
 }
 
 export function validateUserLogin(user: UserLogin): boolean {

@@ -23,7 +23,8 @@ export async function register(user: UserToRegister): Promise<LeanDocument<I_Use
 
         const newUser = await createUser({
             email: user.email,
-            name: user.name,
+            fullName: user.fullName,
+            userName: user.userName,
             authentication: {
                 salt: salt,
                 password: authentication(salt, user.password),
@@ -62,7 +63,8 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
         await foundUser.save();
         return {
             email: foundUser.email, 
-            name: foundUser.name, 
+            userName: foundUser.userName,
+            fullName: foundUser.fullName, 
             role: foundUser.role, 
             token: foundUser.authentication.sessionToken,        
         };        

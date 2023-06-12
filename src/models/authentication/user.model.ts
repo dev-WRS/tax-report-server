@@ -5,7 +5,8 @@ const saltRounds = 8
 
 export interface I_UserDocument extends mongoose.Document {
     email: string;
-    name: string;
+    fullName: string;
+    userName: string;
     authentication: {
         password: string;
         salt: string;
@@ -16,7 +17,8 @@ export interface I_UserDocument extends mongoose.Document {
 
 const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
     email: { type: String, required: true, lowercase: true, unique: true},
-    name: { type: String, required: true, unique: true},
+    fullName: { type: String, required: true, unique: true},
+    userName: { type: String, required: true, unique: true},
     authentication: {
         password: { type: String, required: true, minlength: 6, select: false },
         salt: { type: String, select: false },
