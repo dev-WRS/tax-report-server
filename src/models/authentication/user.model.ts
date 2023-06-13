@@ -15,7 +15,7 @@ export interface I_UserDocument extends mongoose.Document {
 
 const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
     email: { type: String, required: true, lowercase: true, unique: true},
-    fullName: { type: String, required: true, unique: true},
+    fullName: { type: String, required: true },
     userName: { type: String, required: true, unique: true},
     authentication: {
         password: { type: String, required: true, minlength: 6, select: false },

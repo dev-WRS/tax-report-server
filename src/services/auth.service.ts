@@ -35,7 +35,11 @@ export async function register(user: UserToRegister): Promise<LeanDocument<I_Use
 
         return newUser;
     } catch (err) {
-        throw err;
+        if (err.code === 11000) {
+            throw new Error('Already exist user with this username');
+        } else {
+            throw err;
+        }
     }
 }
 
