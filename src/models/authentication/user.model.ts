@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-
-const saltRounds = 8
 
 export interface I_UserDocument extends mongoose.Document {
     email: string;
@@ -9,10 +6,11 @@ export interface I_UserDocument extends mongoose.Document {
     userName: string;
     authentication: {
         password: string;
-        salt: string;
         sessionToken: string;
     };
     role: 'admin' | 'user' | undefined;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
@@ -21,19 +19,12 @@ const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
     userName: { type: String, required: true, unique: true},
     authentication: {
         password: { type: String, required: true, minlength: 6, select: false },
-        salt: { type: String, select: false },
         sessionToken: { type: String, select: false }
     },
-    role: { type: String, enum: ['admin', 'user'], default: 'user' }
+    role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    createdAt: Date,
+    updatedAt: Date
 }); 
-
-UserSchema.pre('save', async function (next) {
-    const user = this;
-    if (user.isModified('password')) {
-      user.authentication.password = await bcrypt.hash(user.authentication.password, saltRounds);
-    }
-    next();
-});
 
 export const UserModel = mongoose.model<I_UserDocument>('User', UserSchema);
 

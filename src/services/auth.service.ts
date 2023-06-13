@@ -1,9 +1,11 @@
 import { LeanDocument } from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { I_UserDocument, createUser, getUserByEmail, getUserBySessionToken } from '../models/authentication/user.model';
-import { UserLoggedIn, UserLogin, UserToRegister, validateUserLogin,
-        validateUserToRegister } from '../interfaces/user.interface';
-import { authentication, random } from '../helper';
+import { UserLoggedIn, UserLogin, UserResetPassword, UserToRegister, validateUserLogin,
+        validateUserResetPassword, validateUserToRegister } from '../interfaces/user.interface';
+import { jwtAuthentication } from '../helper';
 
 export async function register(user: UserToRegister): Promise<LeanDocument<I_UserDocument>> {
     try {
@@ -19,17 +21,16 @@ export async function register(user: UserToRegister): Promise<LeanDocument<I_Use
             throw new Error('Already exist user with this email');
         }
 
-        const salt = random();
-
         const newUser = await createUser({
             email: user.email,
             fullName: user.fullName,
             userName: user.userName,
             authentication: {
-                salt: salt,
-                password: authentication(salt, user.password),
+                password: await jwtAuthentication(user.password),
             },
-            role: user.role
+            role: user.role,
+            createdAt: new Date(),
+            updatedAt: new Date()
         })
 
         return newUser;
@@ -45,20 +46,21 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
         }
 
         const foundUser = await getUserByEmail(user.email)
-                                .select('+authentication.salt +authentication.password');
+                                .select('+authentication.password');
 
         if (!foundUser) {
             throw new Error('User not exist width this email');
         }
 
-        const expectedHash = authentication(foundUser.authentication.salt, user.password);
+        const passwordEquals = await bcrypt.compare(user.password, foundUser.authentication.password);
 
-        if (foundUser.authentication.password !== expectedHash) {
+        if (!passwordEquals) {
             throw new Error('Password is not correct');
         }
 
-        const salt = random();
-        foundUser.authentication.sessionToken = authentication(salt, foundUser._id.toString());
+        const token = jwt.sign({ email: foundUser.email, role: foundUser.role}, process.env.JWT_SECRET, { expiresIn: '2h'} );
+        foundUser.authentication.sessionToken = token;
+        foundUser.updatedAt = new Date();
 
         await foundUser.save();
         return {
@@ -66,7 +68,7 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
             userName: foundUser.userName,
             fullName: foundUser.fullName, 
             role: foundUser.role, 
-            token: foundUser.authentication.sessionToken,        
+            token: token,        
         };        
     } catch (err) {
         throw err;
@@ -75,13 +77,15 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
 
 export async function logout(sessionToken: string): Promise<boolean> {
     try {
-        const foundUser = await getUserBySessionToken(sessionToken);
+        const token = sessionToken.slice(7);
+        const foundUser = await getUserBySessionToken(token);
 
         if (!foundUser) {
             throw new Error('User is not logged in');
         }
 
         foundUser.authentication.sessionToken = '';
+        foundUser.updatedAt = new Date();
         await foundUser.save();
 
         return true;
@@ -90,13 +94,31 @@ export async function logout(sessionToken: string): Promise<boolean> {
     }
 }
 
-export async function isLoggedIn(sessionToken: string): Promise<boolean> {
+export async function resetPassword(user: UserResetPassword): Promise<boolean> {
     try {
-        const foundUser = await getUserBySessionToken(sessionToken);
+        if (!validateUserResetPassword) {
+            throw new Error('Validation error');
+        }
+
+        const foundUser = await getUserByEmail(user.email).select('+authentication.password');
 
         if (!foundUser) {
-            throw new Error('User is not logged in');
+            throw new Error('User not exist width this email');
         }
+
+        const passwordEquals = await bcrypt.compare(user.password, foundUser.authentication.password);
+
+        if (!passwordEquals) {
+            throw new Error('Password is not correct');
+        }
+
+        if (user.newPassword !== user.confirmPassword) {
+            throw new Error('New Password do not match');
+        }
+
+        foundUser.authentication.password = await jwtAuthentication(user.newPassword);
+        foundUser.updatedAt = new Date();
+        await foundUser.save();
 
         return true;
     } catch (err) {

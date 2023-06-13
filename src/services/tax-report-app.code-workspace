@@ -1,11 +1,10 @@
 {
-	"folders": [
-		{
-			"path": "../.."
-		},
-		{
-			"path": "../../../tax-report"
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "../../../tax-report"
+        },
+        {
+            "path": "../.."
+        }
+    ]
 }

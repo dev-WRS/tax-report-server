@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { getErrorMessage } from '../../utils/error.utils';
 import * as userServices from '../../services/auth.service';
-import {UserLogin, UserToRegister} from '../../interfaces/user.interface';
+import {UserLogin, UserResetPassword, UserToRegister} from '../../interfaces/user.interface';
 import logging from '../../config/logging';
 
 const NAMESPACE = 'Auth Controller';
@@ -10,10 +10,7 @@ const NAMESPACE = 'Auth Controller';
 const login = async (req: Request, res: Response) => {
     try {
         const userToLogin: UserLogin = req.body;
-        const foundUser = await userServices.login(userToLogin);
-
-        res.cookie('WRS-AUTH', foundUser.token, { domain: 'localhost', path: '/' });
-        
+        const foundUser = await userServices.login(userToLogin);        
         res.status(200).json(foundUser).end(); 
     } catch (err) {
         const errorMessage = getErrorMessage(err);
@@ -34,35 +31,14 @@ const register = async (req: Request, res: Response) => {
     }
 };
 
-const isLoggedIn = async (req: Request, res: Response) => {
-    try {
-    const sessionToken = req.cookies['WRS-AUTH'];
-    if (!sessionToken) {
-      return res.status(403).send('Please authenticate');
-    }
-
-    const result = await userServices.isLoggedIn(sessionToken);
-    
-    res.cookie('WRS-AUTH', '', { domain: 'localhost', path: '/' });
-        
-    res.status(200).json(result).end(); 
-    } catch (err) {
-        const errorMessage = getErrorMessage(err);
-        logging.error(NAMESPACE, `Error occurred while checking if user is logged in: ${errorMessage}`);
-        return res.status(400).send({ message: errorMessage });
-    }
-}
-
 const logout = async (req: Request, res: Response) => {
     try {
-        const sessionToken = req.cookies['WRS-AUTH'];
+        const sessionToken = req.headers['authorization']
         if (!sessionToken) {
           return res.status(403).send('Please authenticate');
         }
 
         const result = await userServices.logout(sessionToken);
-    
-        res.cookie('WRS-AUTH', '', { domain: 'localhost', path: '/' });
             
         res.status(200).json(result).end(); 
     } catch (err) {
@@ -72,4 +48,22 @@ const logout = async (req: Request, res: Response) => {
     }
 }
 
-export default { login, register, logout, isLoggedIn };
+const resetPassword = async (req: Request, res: Response) => {
+    try {
+        const sessionToken = req.headers['authorization'];
+        if (!sessionToken) {
+          return res.status(403).send('Please authenticate');
+        }
+        
+        const userToReset: UserResetPassword = req.body;
+        const result = await userServices.resetPassword(userToReset);
+            
+        res.status(200).json(result).end(); 
+    } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        logging.error(NAMESPACE, `Error occurred while resetting password to user: ${errorMessage}`);
+        return res.status(400).send({ message: errorMessage });
+    }
+}
+
+export default { login, register, logout, resetPassword };

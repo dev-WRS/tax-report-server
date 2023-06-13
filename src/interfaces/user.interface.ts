@@ -18,6 +18,13 @@ export interface UserLogin {
     password: string;
 }
 
+export interface UserResetPassword {
+    email: string;
+    password: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
 export interface UserLoggedIn{
     email: string;
     fullName: string;
@@ -32,4 +39,8 @@ export function validateUserToRegister(user: UserToRegister): boolean {
 
 export function validateUserLogin(user: UserLogin): boolean {
     return user.email !== undefined && user.password !== undefined;
+}
+
+export function validateUserResetPassword(user: UserResetPassword): boolean {
+    return user.email !== undefined && user.newPassword !== undefined  && user.password !== undefined && user.confirmPassword !== undefined;
 }

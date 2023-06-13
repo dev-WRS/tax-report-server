@@ -5,13 +5,13 @@ import fs from 'fs';
 import logging from '../config/logging';
 
 import mboxFilesHandlerController from '../controllers/file-management/mboxFilesHandler.controller';
-import { isAuthenticated } from '../middleware/auth.middleware';
+import { jwtAuthenticated } from '../middleware/auth.middleware';
 import { adminAuthorize } from '../middleware/admin.auth.middleware';
 
 const router = express.Router();
 const NAMESPACE = 'Mbox File Handler Route';
 /** Ping to controller */
-router.get('/ping', isAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxHealthCheck);
+router.get('/ping', jwtAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxHealthCheck);
 
 /** Upload mbox files */
 
@@ -53,10 +53,10 @@ const option: multer.Options = {
 };
 const upload = multer(option);
 
-router.post('/upload', isAuthenticated, adminAuthorize, upload.array('files'), mboxFilesHandlerController.mboxFilesUpload);
+router.post('/upload', jwtAuthenticated, adminAuthorize, upload.array('files'), mboxFilesHandlerController.mboxFilesUpload);
 
 /** Handle mbox files */
-router.post('/handle', isAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxFileHandle);
+router.post('/handle', jwtAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxFileHandle);
 
 /** Export route */
 export default router;

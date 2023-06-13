@@ -1,12 +1,13 @@
 import express from 'express';
 
 import authController from '../controllers/authentication/auth.controller';
+import { jwtAuthenticated } from '../middleware/auth.middleware';
 
 const authRouter = express.Router();
 
 authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
-authRouter.get('/isLoggedIn', authController.isLoggedIn);
-authRouter.get('/logout', authController.logout);
+authRouter.post('/logout', jwtAuthenticated ,authController.logout);
+authRouter.post('/reset-password', jwtAuthenticated ,authController.resetPassword);
 
 export default authRouter;
