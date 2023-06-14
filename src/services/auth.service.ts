@@ -129,3 +129,40 @@ export async function resetPassword(user: UserResetPassword): Promise<boolean> {
         throw err;
     }
 }
+
+export async function forgotPassword(email: string): Promise<boolean> {
+    if (!email) {
+        throw new Error('Email is required');
+    }
+
+    const message = 'Check your mail for a link to reset your password. If it doesn’t appear within a few minutes, check your spam folder.';
+    let verificationLink;
+    let emailStatus = 'OK';
+
+    let user = await getUserByEmail(email);
+    try {         
+        const token = jwt.sign({ email: user.email, role: user.role}, process.env.JWT_SECRET, { expiresIn: '10m'} );
+        verificationLink = `http://${process.env.SERVER_HOSTNAME}:${process.env.SERVER_PORT}/new-password/${token}`;
+        user.authentication.resetToken = token;      
+    } catch (err) {
+        throw new Error(message);
+    }
+
+    try {
+
+    } catch (err) {
+        emailStatus = err;
+        throw new Error('Something went wrong while sending email');
+    }
+
+    try {
+        user.updatedAt = new Date();
+        await user.save();
+    }
+    catch (err) {
+        emailStatus = err;
+        throw new Error('Something went wrong');
+    }
+    return true;
+}
+

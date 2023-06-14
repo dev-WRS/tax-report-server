@@ -2,16 +2,16 @@ import express from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
-import logging from '../config/logging';
 
+import logging from '../config/logging';
 import mboxFilesHandlerController from '../controllers/file-management/mboxFilesHandler.controller';
 import { jwtAuthenticated } from '../middleware/auth.middleware';
-import { adminAuthorize } from '../middleware/admin.auth.middleware';
+import { checkRoleAuthorize } from '../middleware/admin.auth.middleware';
 
 const router = express.Router();
 const NAMESPACE = 'Mbox File Handler Route';
 /** Ping to controller */
-router.get('/ping', jwtAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxHealthCheck);
+router.get('/ping', jwtAuthenticated, checkRoleAuthorize, mboxFilesHandlerController.mboxHealthCheck);
 
 /** Upload mbox files */
 
@@ -53,10 +53,10 @@ const option: multer.Options = {
 };
 const upload = multer(option);
 
-router.post('/upload', jwtAuthenticated, adminAuthorize, upload.array('files'), mboxFilesHandlerController.mboxFilesUpload);
+router.post('/upload', jwtAuthenticated, checkRoleAuthorize, upload.array('files'), mboxFilesHandlerController.mboxFilesUpload);
 
 /** Handle mbox files */
-router.post('/handle', jwtAuthenticated, adminAuthorize, mboxFilesHandlerController.mboxFileHandle);
+router.post('/handle', jwtAuthenticated, checkRoleAuthorize, mboxFilesHandlerController.mboxFileHandle);
 
 /** Export route */
 export default router;

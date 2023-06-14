@@ -7,6 +7,7 @@ export interface I_UserDocument extends mongoose.Document {
     authentication: {
         password: string;
         sessionToken: string;
+        resetToken: string;
     };
     role: 'admin' | 'user' | undefined;
     createdAt: Date;
@@ -19,7 +20,8 @@ const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
     userName: { type: String, required: true, unique: true},
     authentication: {
         password: { type: String, required: true, minlength: 6, select: false },
-        sessionToken: { type: String, select: false }
+        sessionToken: { type: String, select: false },
+        resetToken: { type: String, select: false }
     },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
     createdAt: Date,

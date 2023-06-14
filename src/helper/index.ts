@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 
 export const jwtAuthentication = async(password: string) => {
-    const result = await bcrypt.hash(password, 10);
+    const salt = bcrypt.genSaltSync(10);
+    const result = await bcrypt.hash(password, salt);
     return result;
 }
