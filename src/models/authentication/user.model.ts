@@ -10,6 +10,7 @@ export interface I_UserDocument extends mongoose.Document {
         resetToken: string;
     };
     role: 'admin' | 'user' | undefined;
+    status: 'verified' | 'unverified' | 'disabled';
     createdAt: Date;
     updatedAt: Date;
 }
@@ -24,6 +25,7 @@ const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
         resetToken: { type: String, select: false }
     },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    status: { type: String, enum: ['verified', 'unverified', 'disabled'], default: 'unverified' },
     createdAt: Date,
     updatedAt: Date
 }); 
@@ -38,6 +40,11 @@ export const getUserBySessionToken = (sessionToken: string) => {
   const user = UserModel.findOne({'authentication.sessionToken': sessionToken});
   return user;
 };
+
+export const getUserByResetToken = (resetToken: string) => {
+    const user = UserModel.findOne({'authentication.resetToken': resetToken});
+    return user;
+  };
 
 export const getUserById = (id: string) => UserModel.findById(id);
 

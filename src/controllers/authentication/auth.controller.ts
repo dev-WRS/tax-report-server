@@ -31,23 +31,6 @@ const register = async (req: Request, res: Response) => {
     }
 };
 
-const logout = async (req: Request, res: Response) => {
-    try {
-        const sessionToken = req.headers['authorization']
-        if (!sessionToken) {
-          return res.status(403).send('Please authenticate');
-        }
-
-        const result = await userServices.logout(sessionToken);
-            
-        res.status(200).json(result).end(); 
-    } catch (err) {
-        const errorMessage = getErrorMessage(err);
-        logging.error(NAMESPACE, `Error occurred while logging out user: ${errorMessage}`);
-        return res.status(400).send({ message: errorMessage });
-    }
-}
-
 const resetPassword = async (req: Request, res: Response) => {
     try {
         const sessionToken = req.headers['authorization'];
@@ -66,4 +49,32 @@ const resetPassword = async (req: Request, res: Response) => {
     }
 }
 
-export default { login, register, logout, resetPassword };
+const newPassword = async (req: Request, res: Response) => {
+    try {        
+        const password: string = req.body.password;
+        const resetToken = req.headers.reset as string;
+
+        const result = await userServices.newPassword(resetToken, password);
+            
+        res.status(200).json(result).end(); 
+    } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        logging.error(NAMESPACE, `Error occurred while recovering new password to user: ${errorMessage}`);
+        return res.status(400).send({ message: errorMessage });
+    }
+}
+
+const forgotPassword = async (req: Request, res: Response) => {
+    try {        
+        const email: string = req.body.email;
+        const result = await userServices.forgotPassword(email);
+            
+        res.status(200).json(result).end();
+    } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        logging.error(NAMESPACE, `Error occurred while resetting password to user: ${errorMessage}`);
+        return res.status(400).send({ message: errorMessage });
+    }
+}
+
+export default { login, register, resetPassword, forgotPassword, newPassword };

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { get } from "lodash";
 import * as jwt from 'jsonwebtoken';
+
+import config from '../config/config';
 
 export const checkRoleAuthorize = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -10,7 +11,7 @@ export const checkRoleAuthorize = (req: Request, res: Response, next: NextFuncti
           return res.status(403).send('Please authenticate');
         }
         
-        let jwtPayload = <any>jwt.verify(headerToken.slice(7), process.env.JWT_SECRET);
+        let jwtPayload = <any>jwt.verify(headerToken.slice(7), config.secrets.jwtSecret);
         res.locals.jwtPayload = jwtPayload;
 
          if (jwtPayload && jwtPayload.role !== 'admin') {

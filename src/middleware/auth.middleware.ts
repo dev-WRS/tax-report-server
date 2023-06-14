@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
+import config from '../config/config';
+
 export const jwtAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
    const headerToken = req.headers['authorization'];
@@ -9,7 +11,7 @@ export const jwtAuthenticated = async (req: Request, res: Response, next: NextFu
    }
  
    const bearerToken = headerToken.slice(7);
-   const validToken = jwt.verify(bearerToken, process.env.JWT_SECRET);
+   const validToken = jwt.verify(bearerToken, config.secrets.jwtSecret);
    if (!validToken) {
      return res.status(403).send('Invalid token');
    }
