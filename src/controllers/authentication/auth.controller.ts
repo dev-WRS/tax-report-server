@@ -77,4 +77,18 @@ const forgotPassword = async (req: Request, res: Response) => {
     }
 }
 
-export default { login, register, resetPassword, forgotPassword, newPassword };
+const confirmRegister = async (req: Request, res: Response) => {
+    try {        
+        const confirmToken = req.headers['confirm-token'] as string;
+
+        const result = await userServices.confirmRegistry(confirmToken);
+            
+        res.status(200).json(result).end(); 
+    } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        logging.error(NAMESPACE, `Error occurred at confirm registry: ${errorMessage}`);
+        return res.status(400).send({ message: errorMessage });
+    }
+}
+
+export default { login, register, resetPassword, forgotPassword, newPassword, confirmRegister };

@@ -2,8 +2,7 @@ import { LeanDocument } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { I_UserDocument, createUser, getUserByEmail, getUserByResetToken, 
-        getUserBySessionToken } from '../models/authentication/user.model';
+import { I_UserDocument, createUser, getUserByEmail, getUserByResetToken } from '../models/authentication/user.model';
 import { UserLoggedIn, UserLogin, UserResetPassword, UserToRegister, validateUserLogin,
         validateUserResetPassword, validateUserToRegister } from '../interfaces/user.interface';
 import { jwtAuthentication } from '../helper';
@@ -72,6 +71,10 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
             throw new Error('User not exist width this email');
         }
 
+        if (foundUser.status !== 'verified') {
+            throw new Error('Your account is not verified yet');
+        }
+
         const passwordEquals = await bcrypt.compare(user.password, foundUser.authentication.password);
 
         if (!passwordEquals) {
@@ -105,6 +108,10 @@ export async function resetPassword(user: UserResetPassword): Promise<boolean> {
 
         if (!foundUser) {
             throw new Error('User not exist width this email');
+        }
+
+        if (foundUser.status !== 'verified') {
+            throw new Error('Your account is not verified yet');
         }
 
         const passwordEquals = await bcrypt.compare(user.password, foundUser.authentication.password);
@@ -141,6 +148,11 @@ export async function forgotPassword(email: string): Promise<boolean> {
     if (!foundUser) {
         throw new Error('User not exist width this email');
     }
+
+    if (foundUser.status !== 'verified') {
+        throw new Error('Your account is not verified yet');
+    }
+
     try {         
         const token = jwt.sign({ email: foundUser.email, role: foundUser.role}, config.secrets.jwtSecret, { expiresIn: '10m'} );
         verificationLink = `http://${config.server.hostname}:${config.server.frontEndPort}/new-password/${token}`;
@@ -192,6 +204,14 @@ export async function newPassword(token: string, newPassword: string): Promise<b
             throw new Error('User not exist width this token');
         }
 
+        if (foundUser.status !== 'verified') {
+            throw new Error('Your account is not verified yet');
+        }
+
+        if (foundUser.authentication.resetToken === '') {
+            throw new Error('Your change password using this token. Please request new one');
+        }
+
         foundUser.authentication.password = await jwtAuthentication(newPassword);
         foundUser.authentication.resetToken = '';
         foundUser.updatedAt = new Date();
@@ -205,34 +225,37 @@ export async function newPassword(token: string, newPassword: string): Promise<b
 }
 
 export async function confirmRegistry(token: string): Promise<boolean> {
-    // if (!token) {
-    //     throw new Error('Token is required');
-    // }
+    if (!token) {
+        throw new Error('Token is required');
+    }
 
-    // try {
-    //     let validToken = {email: String, role: String};
-    //     jwt.verify(token, config.secrets.jwtSecret, (err, decoded: JwtPayload) => {
-    //         if (err) {
-    //             throw new Error('Confirmation Token is not valid');
-    //         } else {
-    //             validToken = decoded;
-    //         }
-    //         return validToken;
-    //     });
+    try {
+        const validToken = await new Promise<JwtPayload>((resolve, reject) => {
+            jwt.verify(token, config.secrets.jwtSecret, (err, decoded: JwtPayload) => {
+                if (err) {
+                    reject(new Error('Confirmation Token is not valid'));
+                } else {
+                    resolve(decoded);
+                }
+            });
+        });
     
-    //     const foundUser = await getUserByEmail(validToken.email | '');
-    //     if (!foundUser) {
-    //         throw new Error('User not exist width this token');
-    //     }
+        const foundUser = await getUserByEmail(validToken.email);
+        if (!foundUser) {
+            throw new Error('User not exist width this token');
+        }
 
-    //     foundUser.authentication.password = await jwtAuthentication(newPassword);
-    //     foundUser.authentication.resetToken = '';
-    //     foundUser.updatedAt = new Date();
-    //     await foundUser.save();
+        if (foundUser.status === 'verified') {
+            throw new Error('Your account is verified already. Please login');
+        }
 
-    // } catch (err) {
-    //     throw err;
-    // }
+        foundUser.status = 'verified';
+        foundUser.updatedAt = new Date();
+        await foundUser.save();
+
+    } catch (err) {
+        throw err;
+    }
     
     return true;
 }
