@@ -10,6 +10,7 @@ import config from './config/config';
 import logging from './config/logging';
 import authRouter from './routes/auth.route';
 import mboxFilesHandlerRoute from './routes/mboxFilesHandler.route';
+import filesHandlerRoute from './routes/filesHandler.route';
 
 const NAMESPACE = 'Server';
 
@@ -58,3 +59,4 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRouter);
 app.use('/mbox', mboxFilesHandlerRoute);
+app.use('/files', filesHandlerRoute);
