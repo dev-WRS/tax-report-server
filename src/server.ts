@@ -11,6 +11,7 @@ import logging from './config/logging';
 import authRouter from './routes/auth.route';
 import mboxFilesHandlerRoute from './routes/mboxFilesHandler.route';
 import filesHandlerRoute from './routes/filesHandler.route';
+import projectRouter from './routes/project.route';
 
 const NAMESPACE = 'Server';
 
@@ -28,10 +29,11 @@ httpServer.listen(config.server.port, () => {
 
 const MONGO_URL = 'mongodb://localhost:27017/wrs_tax_report';
 mongoose.Promise = Promise;
-mongoose.connect(MONGO_URL, {useNewUrlParser: true});
-mongoose.connection.on('error', (error: Error) => {
-    console.log(error);
-})
+mongoose.connect(MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {
+        console.log('MongoDB connected');
+    }).catch((error) => {
+        console.error('Error de conexión a la base de datos:', error);
+    });
 
 /** Logging the request */
 app.use((req, res, next) => {
@@ -60,3 +62,4 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/mbox', mboxFilesHandlerRoute);
 app.use('/files', filesHandlerRoute);
+app.use('/projects', projectRouter)
