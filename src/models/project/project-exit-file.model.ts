@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ProjectFileModel, I_ProjectFileDocument } from './project-file.model';
+import { ProjectFile, I_ProjectFileDocument } from './project-file.model';
 
 export interface I_ExitProjectFileDocument extends I_ProjectFileDocument {
   columnsToShow: ColumnsToShow[];
@@ -25,21 +25,21 @@ export interface ColumnsToShow {
   isVisible: boolean;
 }
 
-export const ExitProjectFileModel = ProjectFileModel.discriminator<I_ExitProjectFileDocument>(
+export const ExitProjectFile = ProjectFile.discriminator<I_ExitProjectFileDocument>(
   'ExitProjectFile',
   ExitProjectFileSchema
 );
 
-export const getExitProjectFiles = () => ExitProjectFileModel.find();
+export const getExitProjectFiles = () => ExitProjectFile.find();
 
-export const getExitProjectFileById = (id: string) => ExitProjectFileModel.findById(id);
+export const getExitProjectFileById = (id: string) => ExitProjectFile.findById(id);
 
-export const getExitProjectFileByName = (name: string) => ExitProjectFileModel.findOne({name});
+export const getExitProjectFileByName = (name: string) => ExitProjectFile.findOne({name});
 
-export const getExitProjectFileByUrl = (url: string) => ExitProjectFileModel.findOne({url});
+export const getExitProjectFileByUrl = (url: string) => ExitProjectFile.findOne({url});
 
-export const createExitProjectFile = (values: Record<string, any>) => new ExitProjectFileModel(values).save().then((exitProjectFile) => exitProjectFile.toObject());
+export const createExitProjectFile = (values: Record<string, any>) => new ExitProjectFile(values).save().then((exitProjectFile) => exitProjectFile.toObject());
 
-export const deleteExitProjectFileById = (id: string) => ExitProjectFileModel.findByIdAndDelete({ _id: id});
+export const deleteExitProjectFileById = (id: string) => ExitProjectFile.findByIdAndDelete({ _id: id});
 
-export const updateExitProjectFileById = (id: string, values: Record<string, any>) => ExitProjectFileModel.findByIdAndUpdate({ _id: id}, values);
+export const updateExitProjectFileById = (id: string, values: Record<string, any>) => ExitProjectFile.findByIdAndUpdate({ _id: id}, values);

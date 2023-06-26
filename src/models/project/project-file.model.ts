@@ -14,18 +14,18 @@ const ProjectFileSchema: mongoose.Schema<I_ProjectFileDocument> = new mongoose.S
     url: { type: String, required: true, unique: true },
 });
 
-export const ProjectFileModel = mongoose.model<I_ProjectFileDocument>('ProjectFile', ProjectFileSchema);
+export const ProjectFile = mongoose.model<I_ProjectFileDocument>('ProjectFile', ProjectFileSchema);
 
-export const getProjectFiles = () => ProjectFileModel.find();
+export const getProjectFiles = () => ProjectFile.find();
 
-export const getProjectFileById = (id: string) => ProjectFileModel.findById(id);
+export const getProjectFileById = (id: string) => ProjectFile.findById(id);
 
-export const getProjectFileByName = (name: string) => ProjectFileModel.findOne({name});
+export const getProjectFileByName = (name: string) => ProjectFile.findOne({name});
 
-export const getProjectFileByUrl = (url: string) => ProjectFileModel.findOne({url});
+export const getProjectFileByUrl = (url: string) => ProjectFile.findOne({url});
 
-export const createProjectFile = (values: Record<string, any>) => new ProjectFileModel(values).save().then((projectFile) => projectFile.toObject());
+export const createProjectFile = (values: Record<string, any>) => new ProjectFile(values).save().then((projectFile) => projectFile.toObject());
 
-export const deleteProjectFileById = (id: string) => ProjectFileModel.findByIdAndDelete({ _id: id});
+export const deleteProjectFileById = (id: string) => ProjectFile.findByIdAndDelete({ _id: id});
 
-export const updateProjectFileById = (id: string, values: Record<string, any>) => ProjectFileModel.findByIdAndUpdate({ _id: id}, values);
+export const updateProjectFileById = (id: string, values: Record<string, any>) => ProjectFile.findByIdAndUpdate({ _id: id}, values);

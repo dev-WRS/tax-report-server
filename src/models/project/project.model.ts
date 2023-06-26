@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
-import { ProjectFileModel } from './project-file.model';
-import { ExitProjectFileModel } from './project-exit-file.model';
+import { ProjectFile } from './project-file.model';
+import { ExitProjectFile } from './project-exit-file.model';
 
 export interface I_ProjectDocument extends mongoose.Document {
     name : string;
     description : string;
     status : 'started' | 'data-collected' | 'processing' | 'finished' | 'error'
-    inputFile: typeof  ProjectFileModel;
-    outputFile: typeof ExitProjectFileModel;
+    inputFile: typeof  ProjectFile;
+    outputFile: typeof ExitProjectFile;
     createdAt: Date;
     updatedAt: Date;
     createdBy: string;
@@ -17,8 +17,8 @@ const ProjectSchema: mongoose.Schema<I_ProjectDocument> = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     status: { type: String, enum: ['started', 'data-collected', 'processing', 'finished', 'error'], default: 'started' },
-    inputFile: { type: mongoose.Types.ObjectId, ref: 'ProjectFileModel' },
-    outputFile: { type: mongoose.Types.ObjectId, ref: 'ExitProjectFileModel' },
+    inputFile: { type: mongoose.Types.ObjectId, ref: 'ProjectFile' },
+    outputFile: { type: mongoose.Types.ObjectId, ref: 'ExitProjectFile' },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     createdBy: { type: mongoose.Types.ObjectId, ref: 'UserModel' },

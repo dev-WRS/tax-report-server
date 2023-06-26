@@ -1,9 +1,9 @@
-import { ColumnsToShow } from "../../src/models/project/project-exit-file.model";
+import { ColumnsToShow } from "../models/project/project-exit-file.model";
 
 export interface I_ProjectToCreate {
     name : string;
     description : string;
-    status : 'started' | 'data-collected' | 'processing' | 'finished' | 'error'
+    status : ProjectStatus;
     inputFile: string;
     outputFile: string;
     createdBy: string;
@@ -37,8 +37,16 @@ export function validateProjectFileToCreate(fileToCreate: I_ProjectFileCreate): 
 
 export function validateExistProjectFileToCreate(exitFileToCreate: I_ExitProjectFileCreate): boolean {
     return exitFileToCreate.name !== undefined && exitFileToCreate.name !== '' &&
-    exitFileToCreate.size !== undefined &&
+           exitFileToCreate.size !== undefined &&
            exitFileToCreate.type !== undefined && exitFileToCreate.type !== '' &&
            exitFileToCreate.url !== undefined && exitFileToCreate.url !== '' &&
            exitFileToCreate.columnsToShow !== undefined && exitFileToCreate.columnsToShow.length > 0;
+}
+
+export enum ProjectStatus {
+    STARTED = 'started',
+    DATA_COLLECTED = 'data-collected',
+    PROCESSING = 'processing',
+    FINISHED = 'finished',
+    ERROR = 'error',
 }

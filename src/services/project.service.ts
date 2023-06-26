@@ -1,11 +1,12 @@
 import { LeanDocument } from 'mongoose';
-import { I_ProjectFileCreate, I_ProjectToCreate, validateProjectFileToCreate, validateProjectToCreate } from '../interfaces/project.interfaces';
-import { I_ProjectDocument, getProjects, createProject, ProjectModel, getProjectByName } from '../models/project/project.model';
+import { I_ProjectFileCreate, I_ProjectToCreate, validateProjectFileToCreate, validateProjectToCreate } from '../interfaces/project.interface';
+import { I_ProjectDocument, createProject, ProjectModel, getProjectByName } from '../models/project/project.model';
 import { I_ProjectFileDocument, createProjectFile, getProjectFileByName } from '../models/project/project-file.model';
 
 export async function getProjectsService(): Promise<I_ProjectDocument[]> {
     try {
-        return getProjects();
+        const projects = await ProjectModel.find().populate('inputFile').populate('outputFile').exec();
+        return projects;
     } catch (error) {
         throw error;
     }
