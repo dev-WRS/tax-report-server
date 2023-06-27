@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
+import path from 'path';
 
 import { checkBucket, deleteFileFromS3, getFileFromS3, replaceFilesInS3, uploadFilesToS3 } from '../../services/filesHandler.service';
 import logging from '../../config/logging';
-import path from 'path';
 
 const NAMESPACE = 'File Handler Controller';
 
@@ -93,7 +93,13 @@ const downloadFile = async (req: Request, res: Response, next: NextFunction) => 
 
 const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     try { 
-        const fileId = req.params.id;
+        const projectId = req.params.id;        
+        const fileId = req.query.fileId;
+        const sessionToken = req.headers['authorization'];
+
+        if (projectId === undefined || projectId === null || projectId === '') {
+            return res.status(400).json({ message: 'Project to replace file is required' });
+        }
 
         if (fileId === undefined || fileId === null || fileId === '') {
             return res.status(400).json({ message: 'File to replace is required' });
@@ -111,7 +117,7 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     
         const files = req.files as Express.Multer.File[];
     
-        const filesCreated = await replaceFilesInS3(check.s3, files[0], fileId);
+        const filesCreated = await replaceFilesInS3(check.s3, files[0], fileId.toString(), sessionToken, projectId);
     
         logging.info('Files replaced successfully.', { label: NAMESPACE });
         res.status(200).json({ message: 'Files replaced successfully', files: filesCreated });

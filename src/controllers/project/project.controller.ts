@@ -9,7 +9,7 @@ const getProjects = async (req: Request, res: Response, next: NextFunction) => {
     try {
         logging.info('Get Projects', { label: NAMESPACE });
         const projects = await projectServices.getProjectsService();
-        res.status(200).json({ projects: projects });
+        res.status(200).json(projects);
     } catch (err: any) {
         logging.error('Error getting Projects.', { label: NAMESPACE, message: err.message });
         res.status(500).json({ message: 'Error getting Projects', error: err });

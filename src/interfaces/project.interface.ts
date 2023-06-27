@@ -1,3 +1,4 @@
+import { ProjectStatus } from "../models/project/project.model";
 import { ColumnsToShow } from "../models/project/project-exit-file.model";
 
 export interface I_ProjectToCreate {
@@ -41,12 +42,4 @@ export function validateExistProjectFileToCreate(exitFileToCreate: I_ExitProject
            exitFileToCreate.type !== undefined && exitFileToCreate.type !== '' &&
            exitFileToCreate.url !== undefined && exitFileToCreate.url !== '' &&
            exitFileToCreate.columnsToShow !== undefined && exitFileToCreate.columnsToShow.length > 0;
-}
-
-export enum ProjectStatus {
-    STARTED = 'started',
-    DATA_COLLECTED = 'data-collected',
-    PROCESSING = 'processing',
-    FINISHED = 'finished',
-    ERROR = 'error',
 }

@@ -42,9 +42,9 @@ export async function register(user: UserToRegister): Promise<LeanDocument<I_Use
             from: config.smtp.sender,
             to: user.email,
             subject: 'Welcome to Walker Reid Strategies Tax Report',
-            html: `<p>Welcome to Walker Reid Strategies Tax Report</p><br>
-                   <p>In Order to confirm your account in Walker Reid Strategies Tax Report</p><br> 
-                   <p>Please follow the next link and confirm:</p><br>
+            html: `<p>Welcome to Walker Reid Strategies Tax Report</p>
+                   <p>In Order to confirm your account in Walker Reid Strategies Tax Report</p>
+                   <p>Please follow the next link and confirm:</p>
                    <a href="${verificationLink}">${verificationLink}</a>`
         });
 

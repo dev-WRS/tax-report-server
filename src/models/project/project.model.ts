@@ -5,7 +5,7 @@ import { ExitProjectFile } from './project-exit-file.model';
 export interface I_ProjectDocument extends mongoose.Document {
     name : string;
     description : string;
-    status : 'started' | 'data-collected' | 'processing' | 'finished' | 'error'
+    status : ProjectStatus
     inputFile: typeof  ProjectFile;
     outputFile: typeof ExitProjectFile;
     createdAt: Date;
@@ -13,10 +13,18 @@ export interface I_ProjectDocument extends mongoose.Document {
     createdBy: string;
 }
 
+export enum ProjectStatus {
+    STARTED = 'started',
+    DATA_COLLECTED = 'data-collected',
+    PROCESSING = 'processing',
+    FINISHED = 'finished',
+    ERROR = 'error',
+}
+
 const ProjectSchema: mongoose.Schema<I_ProjectDocument> = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
-    status: { type: String, enum: ['started', 'data-collected', 'processing', 'finished', 'error'], default: 'started' },
+    status: { type: String, enum: ProjectStatus, default: 'started' },
     inputFile: { type: mongoose.Types.ObjectId, ref: 'ProjectFile' },
     outputFile: { type: mongoose.Types.ObjectId, ref: 'ExitProjectFile' },
     createdAt: { type: Date, default: Date.now },
