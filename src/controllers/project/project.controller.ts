@@ -16,6 +16,18 @@ const getProjects = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+const getProject = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const projectId = req.params.id;  
+        logging.info('Get Project', { label: NAMESPACE });
+        const project = await projectServices.getProjectService(projectId);
+        res.status(200).json(project);
+    } catch (err: any) {
+        logging.error('Error getting Projects.', { label: NAMESPACE, message: err.message });
+        res.status(500).json({ message: 'Error getting Projects', error: err });
+    }
+};
+
 const createProject = async (req: Request, res: Response, next: NextFunction) => {
     try {
         logging.info('Create Project', { label: NAMESPACE });
@@ -40,4 +52,4 @@ const createFileProject = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export default { getProjects, createProject ,createFileProject };
+export default { getProjects, getProject, createProject ,createFileProject };

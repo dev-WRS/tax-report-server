@@ -12,6 +12,15 @@ export async function getProjectsService(): Promise<I_ProjectDocument[]> {
     }
 }
 
+export async function getProjectService(projectId: string): Promise<I_ProjectDocument> {
+    try {
+        const project = await ProjectModel.findById(projectId).populate('inputFile').populate('outputFile').exec();
+        return project;
+    } catch (error) {
+        throw error;
+    }
+}
+
 export async function createProjectService(projectToCreate: I_ProjectToCreate): Promise<LeanDocument<I_ProjectDocument>> {
     try {
         const errors = validateProjectToCreate(projectToCreate);

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import path from 'path';
+import { Readable } from 'stream';
 
 import { checkBucket, deleteFileFromS3, getFileFromS3, replaceFilesInS3, uploadFilesToS3 } from '../../services/filesHandler.service';
 import logging from '../../config/logging';
@@ -83,7 +84,8 @@ const downloadFile = async (req: Request, res: Response, next: NextFunction) => 
             }
           
             res.writeHead(200, { 'Content-Type': contentType });
-            fileFromS3.readable.pipe(res);
+            const readableStream = Readable.from(fileFromS3.readable);
+            readableStream.pipe(res);
         }
     } catch (err) {
         logging.error('Error getting file.', { label: NAMESPACE, message: err.message });
@@ -129,4 +131,4 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
 
 };
 
-export default { filesUpload, deleteFile, getFile: downloadFile, replaceFile };
+export default { filesUpload, deleteFile, downloadFile, replaceFile };

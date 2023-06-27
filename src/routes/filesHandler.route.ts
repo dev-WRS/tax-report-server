@@ -60,7 +60,7 @@ fileHandlerRouter.post(
 );
 
 fileHandlerRouter.delete('/delete/:id', jwtAuthenticated, checkRoleAuthorize, FilesHandlerController.deleteFile);
-fileHandlerRouter.get('/:id', jwtAuthenticated, checkRoleAuthorize, FilesHandlerController.getFile);
+fileHandlerRouter.get('/:id', jwtAuthenticated, checkRoleAuthorize, FilesHandlerController.downloadFile);
 fileHandlerRouter.post('/replace/:id', jwtAuthenticated, checkRoleAuthorize, fileUploadMiddleware, FilesHandlerController.replaceFile);
   
 export default fileHandlerRouter;

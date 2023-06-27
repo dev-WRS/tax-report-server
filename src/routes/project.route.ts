@@ -6,6 +6,7 @@ const projectRouter = express.Router();
 import { jwtAuthenticated } from '../middleware/auth.middleware';
 
 projectRouter.get('/', jwtAuthenticated, projectController.getProjects);
+projectRouter.get('/:id', jwtAuthenticated, projectController.getProject);
 projectRouter.post('/create', jwtAuthenticated, projectController.createProject);
 projectRouter.post('/create-file', jwtAuthenticated, projectController.createFileProject);
 
