@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ProjectFile, I_ProjectFileDocument } from './project-file.model';
+import { ProjectFile, I_ProjectFileDocument } from '@models/project/project-file.model';
 
 export interface I_ExitProjectFileDocument extends I_ProjectFileDocument {
   lastModified: Date;

@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import * as projectServices from '../../services/project.service';
-import * as assetServices from '../../services/assets.service';
 
-import logging from '../../config/logging';
+import * as projectServices from '@services/project.service';
+import * as assetServices from '@services/assets.service';
+import logging from '@config/logging';
 
 const NAMESPACE = 'Project Controller';
 

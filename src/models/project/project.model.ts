@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import { ProjectFile } from './project-file.model';
-import { ExitProjectFile } from './project-exit-file.model';
-import { Asset } from './assets.model';
+
+import { ProjectFile } from '@models/project/project-file.model';
+import { ExitProjectFile } from '@models/project/project-exit-file.model';
+import { Asset } from '@models/project/assets.model';
 
 export interface I_ProjectDocument extends mongoose.Document {
     name : string;

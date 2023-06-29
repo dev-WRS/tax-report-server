@@ -1,8 +1,9 @@
 import { LeanDocument } from 'mongoose';
 
-import { Asset, ColumnsToShow, ConventionType, I_AssetDocument, getAssetById, updateAssetsById } from '../models/project/assets.model';
-import { I_AssetToCreate } from '../interfaces/project.interface';
-import { ProjectStatus, getProjectById } from '../models/project/project.model';
+import { Asset, ColumnsToShow, ConventionType, I_AssetDocument, getAssetById, 
+        updateAssetsById } from '@models/project/assets.model';
+import { I_AssetToCreate } from '@interfaces/project.interface';
+import { ProjectStatus, getProjectById } from '@models/project/project.model';
 
 export async function getAssetByIdService(assetId: string): Promise<I_AssetDocument> {
     try {

@@ -1,5 +1,5 @@
-import { ProjectStatus } from "../models/project/project.model";
-import { ColumnsToShow, ConventionType } from "../models/project/assets.model";
+import { ProjectStatus } from "@models/project/project.model";
+import { ColumnsToShow, ConventionType } from "@models/project/assets.model";
 
 export interface I_ProjectToCreate {
     name : string;

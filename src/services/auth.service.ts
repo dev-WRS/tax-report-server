@@ -2,12 +2,12 @@ import { LeanDocument } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { I_UserDocument, createUser, getUserByEmail, getUserByResetToken } from '../models/authentication/user.model';
+import { I_UserDocument, createUser, getUserByEmail, getUserByResetToken } from '@models/authentication/user.model';
 import { UserLoggedIn, UserLogin, UserResetPassword, UserToRegister, validateUserLogin,
-        validateUserResetPassword, validateUserToRegister } from '../interfaces/user.interface';
-import { jwtAuthentication } from '../helper';
-import { transporter } from '../config/mailer';
-import config from '../config/config';
+        validateUserResetPassword, validateUserToRegister } from '@interfaces/user.interface';
+import { jwtAuthentication } from 'helper/decrypt-authentication';
+import { transporter } from '@config/mailer';
+import config from '@config/config';
 
 export async function register(user: UserToRegister): Promise<LeanDocument<I_UserDocument>> {
     try {

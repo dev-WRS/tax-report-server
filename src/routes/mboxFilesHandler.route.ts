@@ -3,10 +3,10 @@ import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-import logging from '../config/logging';
-import mboxFilesHandlerController from '../controllers/file-management/mboxFilesHandler.controller';
-import { jwtAuthenticated } from '../middleware/auth.middleware';
-import { checkRoleAuthorize } from '../middleware/admin.auth.middleware';
+import logging from '@config/logging';
+import mboxFilesHandlerController from '@controllers/file-management/mboxFilesHandler.controller';
+import { jwtAuthenticated } from '@middleware/auth.middleware';
+import { checkRoleAuthorize } from '@middleware/admin.auth.middleware';
 
 const router = express.Router();
 const NAMESPACE = 'Mbox File Handler Route';

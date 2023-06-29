@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 
-import logging from '../../config/logging';
-import mboxHandlerService from '../../services/mbox-handler.service';
+import logging from '@config/logging';
+import mboxHandlerService from '@services/mbox-handler.service';
 
 const NAMESPACE = 'Mbox File Handler Controller';
 

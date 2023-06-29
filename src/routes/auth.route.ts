@@ -1,8 +1,7 @@
 import express from 'express';
 
-import authController from '../controllers/authentication/auth.controller';
-import { jwtAuthenticated } from '../middleware/auth.middleware';
-import { checkRoleAuthorize } from '../middleware/admin.auth.middleware';
+import authController from '@controllers/authentication/auth.controller';
+import { jwtAuthenticated } from '@middleware/auth.middleware';
 
 const authRouter = express.Router();
 

@@ -1,5 +1,6 @@
-import { S3File } from '../interfaces/s3bucket.interface';
 import { Request, Response, NextFunction } from "express";
+
+import { S3File } from '@interfaces/s3bucket.interface';
 
 export const fileHandler = (req: Request, _: Response, next: NextFunction) => {
   const { files } = req;

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { getErrorMessage } from '../../utils/error.utils';
-import * as userServices from '../../services/auth.service';
-import {UserLogin, UserResetPassword, UserToRegister} from '../../interfaces/user.interface';
-import logging from '../../config/logging';
+import { getErrorMessage } from '@utils/error.utils';
+import * as userServices from '@services/auth.service';
+import { UserLogin, UserResetPassword, UserToRegister } from '@interfaces/user.interface';
+import logging from '@config/logging';
 
 const NAMESPACE = 'Auth Controller';
 

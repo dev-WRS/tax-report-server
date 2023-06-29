@@ -3,11 +3,11 @@ import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-import logging from '../config/logging';
-import FilesHandlerController from '../controllers/file-management/filesHandler.controller';
-import { jwtAuthenticated } from '../middleware/auth.middleware';
-import { checkRoleAuthorize } from '../middleware/admin.auth.middleware';
-import fileUploadMiddleware from '../middleware/file.upload.middleware';
+import logging from '@config/logging';
+import FilesHandlerController from '@controllers/file-management/filesHandler.controller';
+import { jwtAuthenticated } from '@middleware/auth.middleware';
+import { checkRoleAuthorize } from '@middleware/admin.auth.middleware';
+import fileUploadMiddleware from '@middleware/file.upload.middleware';
 
 const fileHandlerRouter = express.Router();
 const NAMESPACE = 'File Handler Route';

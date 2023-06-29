@@ -6,12 +6,12 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import mongoose from 'mongoose';
 
-import config from './config/config';
-import logging from './config/logging';
-import authRouter from './routes/auth.route';
-import mboxFilesHandlerRoute from './routes/mboxFilesHandler.route';
-import filesHandlerRoute from './routes/filesHandler.route';
-import projectRouter from './routes/project.route';
+import config from '@config/config';
+import logging from '@config/logging';
+import authRouter from '@routes/auth.route';
+import mboxFilesHandlerRoute from '@routes/mboxFilesHandler.route';
+import filesHandlerRoute from '@routes/filesHandler.route';
+import projectRouter from '@routes/project.route';
 
 const NAMESPACE = 'Server';
 

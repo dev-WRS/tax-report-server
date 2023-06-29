@@ -1,5 +1,5 @@
-import { decrypt } from '../helper';
-import config from '../config/config';
+import { decrypt } from '../helper/decrypt-authentication';
+import config from '@config/config';
 
 
 export function getValuesFromEncryptedConfig() {

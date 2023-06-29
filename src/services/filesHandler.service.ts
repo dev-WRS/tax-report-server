@@ -4,15 +4,15 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Readable } from "nodemailer/lib/xoauth2";
 import { LeanDocument } from "mongoose";
 
-import config from '../config/config';
-import { createProjectService, getProjectService } from "./project.service";
-import { getValuesFromEncryptedConfig } from '../config/aws-bucket';
-import { I_AssetToCreate, I_ProjectFileCreate } from '../interfaces/project.interface';
-import { createProjectFile, deleteProjectFileById, getProjectFileById } from '../models/project/project-file.model';
-import { I_ProjectDocument, ProjectStatus } from "../models/project/project.model";
-import { getUserByEmail } from "../models/authentication/user.model";
-import { createAssetService, updateAssetService } from "./assets.service";
-import { ColumnsToShow } from "../models/project/assets.model";
+import config from '@config/config';
+import { createProjectService, getProjectService } from "@services/project.service";
+import { getValuesFromEncryptedConfig } from '@config/aws-bucket';
+import { I_AssetToCreate, I_ProjectFileCreate } from '@interfaces/project.interface';
+import { createProjectFile, deleteProjectFileById, getProjectFileById } from '@models/project/project-file.model';
+import { I_ProjectDocument, ProjectStatus } from "@models/project/project.model";
+import { getUserByEmail } from "@models/authentication/user.model";
+import { createAssetService, updateAssetService } from "@services/assets.service";
+import { ColumnsToShow } from "@models/project/assets.model";
 
 export async function checkBucket (): Promise<{response: number, s3: S3}>  {
     try {

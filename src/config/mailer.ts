@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
-import { decrypt } from '../helper';
-import config from '../config/config';
+import config from '@config/config';
+import { decrypt } from 'helper/decrypt-authentication';
 
 let transporterConfig = getValuesFromEncryptedConfig();
 

@@ -1,4 +1,4 @@
-import { I_UserDocument, UserModel } from '../models/authentication/user.model';
+import { I_UserDocument, UserModel } from '@models/authentication/user.model';
 
 class UserRepository {
     public async findAll(): Promise<I_UserDocument[]> {

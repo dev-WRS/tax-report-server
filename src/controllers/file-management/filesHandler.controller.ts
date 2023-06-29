@@ -2,8 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { checkBucket, deleteFileFromS3, getFileFromS3, replaceFilesInS3, uploadFilesToS3 } from '../../services/filesHandler.service';
-import logging from '../../config/logging';
+import { checkBucket, deleteFileFromS3, getFileFromS3, replaceFilesInS3, 
+         uploadFilesToS3 } from '@services/filesHandler.service';
+import logging from '@config/logging';
 
 const NAMESPACE = 'File Handler Controller';
 

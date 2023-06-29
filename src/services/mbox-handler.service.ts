@@ -5,9 +5,9 @@ import * as _ from 'underscore';
 import fs from 'fs';
 import path from 'path';
 
-import logging from '../config/logging';
-import { AddressName, Attachments, MboxModel } from '../models/file-management/mbox.model';
-import { EmlFile } from '../models/file-management/eml.model';
+import logging from '@config/logging';
+import { AddressName, Attachments, MboxModel } from '@models/file-management/mbox.model';
+import { EmlFile } from '@models/file-management/eml.model';
 
 const NAMESPACE = 'Mbox File Handler Service';
 

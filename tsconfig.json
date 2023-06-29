@@ -3,7 +3,19 @@
       "target": "es2016",     
       "module": "NodeNext",
       "moduleResolution": "node",
-      "baseUrl": "src",
+      "baseUrl": "./src",
+      "paths": {
+        "@config/*": ["config/*"],
+        "@controllers/*": ["controllers/*"],
+        "@helpers/*": ["helpers/index.ts"],
+        "@interfaces/*": ["interfaces/*"],
+        "@middleware/*": ["middleware/*"],
+        "@models/*": ["models/*"],
+        "@repositories/*": ["repositories/*"],
+        "@routes/*": ["routes/*"],
+        "@services/*": ["services/*"],
+        "@utils/*": ["utils/*"]
+      },
       "outDir": "dist",
       "sourceMap": true,
       "noImplicitAny": true,
@@ -11,4 +23,7 @@
     "include": [
       "src/**/*"
     ],
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    }
 }
