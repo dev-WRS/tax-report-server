@@ -5,7 +5,7 @@ import { I_ProjectFileDocument, createProjectFile, getProjectFileByName } from '
 
 export async function getProjectsService(): Promise<I_ProjectDocument[]> {
     try {
-        const projects = await ProjectModel.find().populate('inputFile').populate('outputFile').exec();
+        const projects = await ProjectModel.find().populate('inputFile').populate('outputFile').populate('projectAssets').exec();
         return projects;
     } catch (error) {
         throw error;
@@ -14,7 +14,7 @@ export async function getProjectsService(): Promise<I_ProjectDocument[]> {
 
 export async function getProjectService(projectId: string): Promise<I_ProjectDocument> {
     try {
-        const project = await ProjectModel.findById(projectId).populate('inputFile').populate('outputFile').exec();
+        const project = await ProjectModel.findById(projectId).populate('inputFile').populate('outputFile').populate('projectAssets').exec();
         return project;
     } catch (error) {
         throw error;
@@ -41,6 +41,7 @@ export async function createProjectService(projectToCreate: I_ProjectToCreate): 
             createdAt: new Date(),
             updatedAt: new Date(),
             createdBy: projectToCreate.createdBy,
+            projectAssets: projectToCreate.projectAssets,
         });
 
         return newProject;

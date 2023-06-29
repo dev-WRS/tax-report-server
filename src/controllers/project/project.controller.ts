@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as projectServices from '../../services/project.service';
+import * as assetServices from '../../services/assets.service';
 
 import logging from '../../config/logging';
 
@@ -21,6 +22,7 @@ const getProject = async (req: Request, res: Response, next: NextFunction) => {
         const projectId = req.params.id;  
         logging.info('Get Project', { label: NAMESPACE });
         const project = await projectServices.getProjectService(projectId);
+        console.log(project);
         res.status(200).json(project);
     } catch (err: any) {
         logging.error('Error getting Projects.', { label: NAMESPACE, message: err.message });
@@ -52,4 +54,20 @@ const createFileProject = async (req: Request, res: Response, next: NextFunction
     }
 };
 
-export default { getProjects, getProject, createProject ,createFileProject };
+const updateAssetProject = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const projectId = req.params.id; 
+        const assetId = req.params.assetId; 
+        const projectName = req.body.name;
+        const projectDescription = req.body.projectDescription;
+        logging.info('Update Asset Project', { label: NAMESPACE });
+        const AssetToCreate = req.body;
+        const asset = await assetServices.updateAssetService(assetId, projectId, false, AssetToCreate, projectName, projectDescription);
+        res.status(200).json({ asset: asset });
+    } catch (err: any) {
+        logging.error('Error updating Project asset.', { label: NAMESPACE, message: err.message });
+        res.status(500).json({ message: 'Error Error updating Project asset', error: err });
+    }
+};
+
+export default { getProjects, getProject, createProject ,createFileProject, updateAssetProject };

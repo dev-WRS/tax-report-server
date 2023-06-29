@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { ProjectFile } from './project-file.model';
 import { ExitProjectFile } from './project-exit-file.model';
+import { Asset } from './assets.model';
 
 export interface I_ProjectDocument extends mongoose.Document {
     name : string;
@@ -11,6 +12,7 @@ export interface I_ProjectDocument extends mongoose.Document {
     createdAt: Date;
     updatedAt: Date;
     createdBy: string;
+    projectAssets: typeof Asset;
 }
 
 export enum ProjectStatus {
@@ -30,6 +32,7 @@ const ProjectSchema: mongoose.Schema<I_ProjectDocument> = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     createdBy: { type: mongoose.Types.ObjectId, ref: 'UserModel' },
+    projectAssets: { type: mongoose.Types.ObjectId, ref: 'Asset' }
 });
 
 export const ProjectModel = mongoose.model<I_ProjectDocument>('Project', ProjectSchema);

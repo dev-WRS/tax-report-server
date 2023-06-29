@@ -5,12 +5,14 @@ import { Readable } from "nodemailer/lib/xoauth2";
 import { LeanDocument } from "mongoose";
 
 import config from '../config/config';
-import { createProjectService } from "./project.service";
+import { createProjectService, getProjectService } from "./project.service";
 import { getValuesFromEncryptedConfig } from '../config/aws-bucket';
-import { I_ProjectFileCreate } from '../interfaces/project.interface';
+import { I_AssetToCreate, I_ProjectFileCreate } from '../interfaces/project.interface';
 import { createProjectFile, deleteProjectFileById, getProjectFileById } from '../models/project/project-file.model';
-import { I_ProjectDocument, ProjectStatus, getProjectById } from "../models/project/project.model";
+import { I_ProjectDocument, ProjectStatus } from "../models/project/project.model";
 import { getUserByEmail } from "../models/authentication/user.model";
+import { createAssetService, updateAssetService } from "./assets.service";
+import { ColumnsToShow } from "../models/project/assets.model";
 
 export async function checkBucket (): Promise<{response: number, s3: S3}>  {
     try {
@@ -51,7 +53,7 @@ export async function createBucket (s3: S3) {
     }
 };
 
-async function uploadFileToS3(s3: S3, fileData: Express.Multer.File, sessionToken: string, projectIdToUpdate: string)
+async function uploadFileToS3(s3: S3, fileData: Express.Multer.File, sessionToken: string, projectIdToUpdate: string, assetIdToUpdate: string)
                               : Promise<{ file: I_ProjectFileCreate, project: LeanDocument<I_ProjectDocument> }> {
     try {
         const params = {
@@ -70,32 +72,39 @@ async function uploadFileToS3(s3: S3, fileData: Express.Multer.File, sessionToke
             url: url
         };
 
-        const fileCreated = await createProjectFile(createdFile);
+        const fileCreated = await createProjectFile(createdFile);        
 
         const validToken = jwt.verify(sessionToken.slice(7), config.secrets.jwtSecret) as JwtPayload;
         const foundUser = await getUserByEmail(validToken.email);
 
-        if (projectIdToUpdate !== '') {
-            let projectToUpdate = await getProjectById(projectIdToUpdate);
+        if (projectIdToUpdate !== '' && assetIdToUpdate !== '') {
+            let projectToUpdate = await getProjectService(projectIdToUpdate);
 
             if (!projectToUpdate) {
                 throw new Error('Project not found');
             }
+            
+            await updateAssetService(assetIdToUpdate, '', true);
 
             projectToUpdate.inputFile = fileCreated._id;
             projectToUpdate.updatedAt = new Date();
             projectToUpdate.createdBy = foundUser._id;
+            projectToUpdate.status = ProjectStatus.STARTED;
             projectToUpdate = await projectToUpdate.save();
 
             return { file: fileCreated, project: projectToUpdate };
-        } else {
+        } else {            
+            const assetToCreate = await createAssetService(new I_AssetToCreate());
+
             const projectToCreate = {
                 name: `${fileCreated.name} (Provisional)`,
                 description: `Project created from file ${fileCreated.name} (Provisional)`,
                 status: ProjectStatus.STARTED,
                 inputFile: fileCreated._id,
                 outputFile: '',
-                createdBy: foundUser._id
+                createdBy: foundUser._id,
+                projectAssets: assetToCreate._id,
+                exitFileConfiguration: new ColumnsToShow()
             };
 
             const projectCreated = await createProjectService(projectToCreate);
@@ -114,7 +123,7 @@ export async function uploadFilesToS3 (s3: S3, filesData: Express.Multer.File[],
     try {
         const filesUploaded: {file: I_ProjectFileCreate, project: LeanDocument<I_ProjectDocument>}[] = [];
         for (const file of filesData!) {
-            const fileUploaded = await uploadFileToS3(s3, file, sessionToken, '');
+            const fileUploaded = await uploadFileToS3(s3, file, sessionToken, '','');
             filesUploaded.push(fileUploaded);
         }
         return filesUploaded;
@@ -174,9 +183,10 @@ export async function getFileFromS3(s3: S3, fileId: string): Promise<{ readable:
 }
 
 export async function replaceFilesInS3(s3: S3, filesData: Express.Multer.File, fileId: string, sessionToken: string,
-                      projectIdToUpdate: string): Promise<{file: I_ProjectFileCreate, project: LeanDocument<I_ProjectDocument>}> {
+                      projectIdToUpdate: string, assetIdToUpdate: string)
+                      : Promise<{file: I_ProjectFileCreate, project: LeanDocument<I_ProjectDocument>}> {
     try {
-        const fileUploaded = await uploadFileToS3(s3, filesData, sessionToken, projectIdToUpdate);
+        const fileUploaded = await uploadFileToS3(s3, filesData, sessionToken, projectIdToUpdate, assetIdToUpdate);
 
         await deleteFileFromS3(s3, fileId);
         return fileUploaded;

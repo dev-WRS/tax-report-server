@@ -1,5 +1,5 @@
 import { ProjectStatus } from "../models/project/project.model";
-import { ColumnsToShow } from "../models/project/project-exit-file.model";
+import { ColumnsToShow, ConventionType } from "../models/project/assets.model";
 
 export interface I_ProjectToCreate {
     name : string;
@@ -8,6 +8,8 @@ export interface I_ProjectToCreate {
     inputFile: string;
     outputFile: string;
     createdBy: string;
+    projectAssets: string;
+    exitFileConfiguration: ColumnsToShow;
 }
 
 export interface I_ProjectFileCreate {
@@ -18,14 +20,37 @@ export interface I_ProjectFileCreate {
 }
 
 export interface I_ExitProjectFileCreate extends I_ProjectFileCreate {
-    columnsToShow: ColumnsToShow[];
     lastModified: Date;
+}
+
+export class I_AssetToCreate {
+    description : string;
+    ruleTag : string;
+    date: string;
+    cost: string;
+    disposalDate: string;
+    minCost: number;
+    convention: ConventionType
+    exitFileConfiguration: ColumnsToShow;
+
+    constructor(init?: Partial<I_AssetToCreate>) {
+        Object.assign(this, init);
+        this.description = this.description || '';
+        this.ruleTag = this.ruleTag || '';
+        this.date = this.date || '';
+        this.cost = this.cost || '';
+        this.disposalDate = this.disposalDate || '';
+        this.minCost = this.minCost || 0;
+        this.convention = this.convention || ConventionType.NONE;
+        this.exitFileConfiguration = this.exitFileConfiguration || new ColumnsToShow();
+    }
 }
 
 export function validateProjectToCreate(projectToCreate: I_ProjectToCreate): boolean {
     return projectToCreate.name !== undefined && projectToCreate.name !== '' &&
            projectToCreate.status !== undefined &&
            projectToCreate.inputFile !== undefined && projectToCreate.inputFile !== '' &&
+           projectToCreate.projectAssets !== undefined && projectToCreate.projectAssets !== '' &&
            projectToCreate.createdBy !== undefined && projectToCreate.createdBy !== '';
 }
 
@@ -40,6 +65,5 @@ export function validateExistProjectFileToCreate(exitFileToCreate: I_ExitProject
     return exitFileToCreate.name !== undefined && exitFileToCreate.name !== '' &&
            exitFileToCreate.size !== undefined &&
            exitFileToCreate.type !== undefined && exitFileToCreate.type !== '' &&
-           exitFileToCreate.url !== undefined && exitFileToCreate.url !== '' &&
-           exitFileToCreate.columnsToShow !== undefined && exitFileToCreate.columnsToShow.length > 0;
+           exitFileToCreate.url !== undefined && exitFileToCreate.url !== '';
 }

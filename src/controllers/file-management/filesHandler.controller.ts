@@ -97,6 +97,7 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     try { 
         const projectId = req.params.id;        
         const fileId = req.query.fileId;
+        const assetId = req.query.assetId.toString();
         const sessionToken = req.headers['authorization'];
 
         if (projectId === undefined || projectId === null || projectId === '') {
@@ -105,6 +106,10 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
 
         if (fileId === undefined || fileId === null || fileId === '') {
             return res.status(400).json({ message: 'File to replace is required' });
+        }
+
+        if (assetId === undefined || assetId === null || assetId === '') {
+            return res.status(400).json({ message: 'Asset to replace is required' });
         }
     
         if (!req.files || req.files.length === 0) {
@@ -119,7 +124,7 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     
         const files = req.files as Express.Multer.File[];
     
-        const filesCreated = await replaceFilesInS3(check.s3, files[0], fileId.toString(), sessionToken, projectId);
+        const filesCreated = await replaceFilesInS3(check.s3, files[0], fileId.toString(), sessionToken, projectId, assetId);
     
         logging.info('Files replaced successfully.', { label: NAMESPACE });
         res.status(200).json({ message: 'Files replaced successfully', files: filesCreated });
