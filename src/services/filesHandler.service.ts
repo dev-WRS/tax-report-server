@@ -23,13 +23,11 @@ export async function checkBucket (): Promise<{response: number, s3: S3}>  {
           secretAccessKey: clientSecret,
       });
       await s3.headBucket({Bucket: config.drive.bucketName}).promise().then((data) => {
-        console.log("Bucket already Exist", data.$response.httpResponse.statusCode);
-                    response = data.$response.httpResponse.statusCode;
+        response = data.$response.httpResponse.statusCode;
       });  
       
       return {response, s3};
     } catch (error) {    
-      console.log("Error bucket don't exist", error);
       throw new Error(error) 
     }
 };
@@ -45,9 +43,8 @@ export async function createBucket (s3: S3) {
   
       console.log("Bucket Created Successful", res.Location);
   
-      return {success: true, message: "Bucket Created Successful",data: res.Location};
+      return {success: true, message: "Bucket Created Successful", data: res.Location};
     } catch (error) {
-      console.log("Error: Unable to create bucket \n", error);
   
       return {success: false, message: "Unable to create bucket", data: error};
     }
@@ -149,7 +146,6 @@ export async function deleteFileFromS3(s3: S3, fileId: string): Promise<boolean>
       await s3.deleteObject(params).promise();
       await deleteProjectFileById(fileDeleted._id);
 
-      console.log('File deleted successfully from bucket');
       return true;
   } catch (error) {
       throw new Error('File cannot be deleted from bucket');

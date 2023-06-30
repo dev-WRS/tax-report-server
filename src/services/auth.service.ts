@@ -53,7 +53,7 @@ export async function register(user: UserToRegister): Promise<LeanDocument<I_Use
         if (err.code === 11000) {
             throw new Error('Already exist user with this username');
         } else {
-            throw err;
+            throw new Error(err);
         }
     }
 }
@@ -94,7 +94,7 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
             token: token,        
         };        
     } catch (err) {
-        throw err;
+        throw new Error(err);
     }
 }
 
@@ -130,7 +130,7 @@ export async function resetPassword(user: UserResetPassword): Promise<boolean> {
 
         return true;
     } catch (err) {
-        throw err;
+        throw new Error(err);
     }
 }
 
@@ -218,7 +218,7 @@ export async function newPassword(token: string, newPassword: string): Promise<b
         await foundUser.save();
 
     } catch (err) {
-        throw err;
+        throw new Error(err);
     }
 
     return true;
@@ -254,7 +254,7 @@ export async function confirmRegistry(token: string): Promise<boolean> {
         await foundUser.save();
 
     } catch (err) {
-        throw err;
+        throw new Error(err);
     }
     
     return true;
