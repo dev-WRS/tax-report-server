@@ -9,6 +9,7 @@ const projectRouter = express.Router();
 projectRouter.get('/', jwtAuthenticated, projectController.getProjects);
 projectRouter.get('/:id', jwtAuthenticated, checkRoleAuthorize, projectController.getProject);
 projectRouter.post('/create', jwtAuthenticated, checkRoleAuthorize, projectController.createProject);
+projectRouter.delete('/:id', jwtAuthenticated, checkRoleAuthorize, projectController.deleteProject);
 projectRouter.post('/create-file', jwtAuthenticated, checkRoleAuthorize, projectController.createFileProject);
 projectRouter.put('/:id/asset/:assetId', jwtAuthenticated, checkRoleAuthorize, projectController.updateAssetProject);
 

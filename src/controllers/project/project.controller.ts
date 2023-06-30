@@ -70,4 +70,16 @@ const updateAssetProject = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-export default { getProjects, getProject, createProject ,createFileProject, updateAssetProject };
+const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const projectId = req.params.id;  
+        logging.info('Delete Project', { label: NAMESPACE });
+        const project = await projectServices.deleteProjectService(projectId);
+        res.status(200).json({ project: project });
+    } catch (err: any) {
+        logging.error('Error deleting Project.', { label: NAMESPACE, message: err.message });
+        res.status(500).json({ message: 'Error deleting Project', error: err });
+    }
+}
+
+export default { getProjects, getProject, createProject ,createFileProject, updateAssetProject, deleteProject };

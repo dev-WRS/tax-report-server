@@ -2,7 +2,10 @@ import { LeanDocument } from 'mongoose';
 import { I_ProjectFileCreate, I_ProjectToCreate, validateProjectFileToCreate,
          validateProjectToCreate } from '@interfaces/project.interface';
 import { I_ProjectDocument, createProject, ProjectModel, getProjectByName } from '@models/project/project.model';
-import { I_ProjectFileDocument, createProjectFile, getProjectFileByName } from '@models/project/project-file.model';
+import { I_ProjectFileDocument, ProjectFile, createProjectFile, getProjectFileByName } from '@models/project/project-file.model';
+import { Asset } from '@models/project/assets.model';
+import { checkBucket, deleteFileFromS3 } from './filesHandler.service';
+import logging from '@config/logging';
 
 export async function getProjectsService(): Promise<I_ProjectDocument[]> {
     try {
@@ -73,6 +76,38 @@ export async function createProjectInputFileService(fileCreate: I_ProjectFileCre
         });
     
         return newFile;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function deleteProjectService(projectId: string): Promise<void> {
+    try {
+        const projectToDelete = await ProjectModel.findById(projectId);
+        if (!projectToDelete) {
+            throw new Error('Project not found');
+        }
+
+        const assetToDelete = await Asset.findById(projectToDelete.projectAssets);
+        if (!assetToDelete) {
+            throw new Error('Asset not found');
+        }
+
+        const fileToDelete = await ProjectFile.findById(projectToDelete.inputFile);
+        if (!fileToDelete) {
+            throw new Error('File not found');
+        }
+
+        const check = await checkBucket();
+        if (check.response !== 200) {
+            throw new Error( 'Error deleting file in Bucket');
+        }
+
+        await deleteFileFromS3(check.s3, projectToDelete.inputFile.toString());
+
+        await Asset.findByIdAndDelete(projectToDelete.projectAssets);
+
+        await ProjectModel.findByIdAndDelete(projectId);
     } catch (error) {
         throw error;
     }

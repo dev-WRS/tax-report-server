@@ -152,7 +152,6 @@ export async function deleteFileFromS3(s3: S3, fileId: string): Promise<boolean>
       console.log('File deleted successfully from bucket');
       return true;
   } catch (error) {
-      console.error('Error deleting file from bucket:', error);
       throw new Error('File cannot be deleted from bucket');
   }
 }
