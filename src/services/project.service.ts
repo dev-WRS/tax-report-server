@@ -5,7 +5,6 @@ import { I_ProjectDocument, createProject, ProjectModel, getProjectByName } from
 import { I_ProjectFileDocument, ProjectFile, createProjectFile, getProjectFileByName } from '@models/project/project-file.model';
 import { Asset } from '@models/project/assets.model';
 import { checkBucket, deleteFileFromS3 } from './filesHandler.service';
-import logging from '@config/logging';
 
 export async function getProjectsService(): Promise<I_ProjectDocument[]> {
     try {

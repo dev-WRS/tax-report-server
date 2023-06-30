@@ -5,9 +5,9 @@ import * as _ from 'underscore';
 import fs from 'fs';
 import path from 'path';
 
-import logging from '@config/logging';
 import { AddressName, Attachments, MboxModel } from '@models/file-management/mbox.model';
 import { EmlFile } from '@models/file-management/eml.model';
+import { logger } from '@config/logging';
 
 const NAMESPACE = 'Mbox File Handler Service';
 
@@ -16,7 +16,7 @@ async function handleMboxFiles(streamedFile: fs.ReadStream, filename: string) {
     // create folder if not exists
     if (!fs.existsSync(folderPath)) {
         fs.mkdirSync(folderPath);
-        logging.info(`Folder created successfully on ${folderPath}.`, { label: NAMESPACE });
+        logger.info(`Folder created successfully on ${folderPath}.`, { label: NAMESPACE });
     }
 
     // Create .eml file
@@ -31,18 +31,18 @@ async function handleMboxFiles(streamedFile: fs.ReadStream, filename: string) {
             const content = writeEmlFile(email);
             createEmlFile(folderPath, fileName, content);
 
-            logging.info(`File handled successfully on ${folderPath} with name ${fileName}.`, { label: NAMESPACE, message: filename });
+            logger.info(`File handled successfully on ${folderPath} with name ${fileName}.`, { label: NAMESPACE, message: filename });
         } catch (e: any) {
-            logging.error(`File handled with some error.`, { label: NAMESPACE, message: e.message });
+            logger.error(`File handled with some error.`, { label: NAMESPACE, message: e.message });
         }
     });
 
     mbox.on('error', function (err: any) {
-        logging.error(`File handled with error ${err}.`, { label: NAMESPACE, message: err.message });
+        logger.error(`File handled with error ${err}.`, { label: NAMESPACE, message: err.message });
     });
 
     mbox.on('end', function () {
-        logging.info(`File handling end.`, { label: NAMESPACE });
+        logger.info(`File handling end.`, { label: NAMESPACE });
     });
 }
 
@@ -61,9 +61,9 @@ function createEmlFile(folderPath: string, fileName: string, content: string): v
         const filePath = path.join(folderPath, `${fileName}`);
         // Create .eml file
         fs.writeFileSync(filePath, content);
-        logging.info(`EML file created successfully on ${folderPath} with name ${fileName}.`, { label: NAMESPACE });
+        logger.info(`EML file created successfully on ${folderPath} with name ${fileName}.`, { label: NAMESPACE });
     } catch (err: any) {
-        logging.error(`EML File creation failed on ${folderPath} with name ${fileName}.`, { label: NAMESPACE, message: err.message });
+        logger.error(`EML File creation failed on ${folderPath} with name ${fileName}.`, { label: NAMESPACE, message: err.message });
     }
 }
 
@@ -135,10 +135,10 @@ function writeEmlFile(email: MboxModel): string {
 
     emlFormat.build(emlFile, (err: any, eml: any) => {
         if (err) {
-            return logging.error(`Failed eml File creation by build error ${err}.`, { label: NAMESPACE, message: err.message });
+            return logger.error(`Failed eml File creation by build error ${err}.`, { label: NAMESPACE, message: err.message });
         }
         result = eml;
-        logging.info(`Eml File created successfully.`, { label: NAMESPACE });
+        logger.info(`Eml File created successfully.`, { label: NAMESPACE });
     });
 
     return result;

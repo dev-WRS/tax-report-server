@@ -4,22 +4,22 @@ import { Readable } from 'stream';
 
 import { checkBucket, deleteFileFromS3, getFileFromS3, replaceFilesInS3, 
          uploadFilesToS3 } from '@services/filesHandler.service';
-import logging from '@config/logging';
 import { getErrorMessage } from '@utils/error.utils';
+import { logger } from '@config/logging';
 
 const NAMESPACE = 'File Handler Controller';
 
 /**Response to upload File */
 const filesUpload = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        logging.info('File Upload process started.', { label: NAMESPACE });
+        logger.info('File Upload process started.', { label: NAMESPACE });
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'No files uploaded' });
         }
 
         const check = await checkBucket();
         if (check.response !== 200) {
-            logging.error('Error uploading file bucket do not exist', { label: NAMESPACE });
+            logger.error('Error uploading file bucket do not exist', { label: NAMESPACE });
             res.status(500).json({ message: 'Error uploading files, bucket do not exist' });
         }
 
@@ -29,60 +29,60 @@ const filesUpload = async (req: Request, res: Response, next: NextFunction) => {
 
         const filesCreated = await uploadFilesToS3(check.s3, files, sessionToken);
 
-        logging.info('Files uploaded successfully.', { label: NAMESPACE });
+        logger.info('Files uploaded successfully.', { label: NAMESPACE });
         res.status(200).json({ message: 'Files uploaded successfully', data: filesCreated });
     } catch (err: any) {
         const errorMessage = getErrorMessage(err);
-        logging.error(`Error uploading files - ${errorMessage}`, { label: NAMESPACE });
+        logger.error(`Error uploading files - ${errorMessage}`, { label: NAMESPACE });
         res.status(500).json({ message: `Error uploading files - ${errorMessage}`});
     }
 };
 
 const deleteFile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        logging.info('Delete file process started.',{ label: NAMESPACE });
+        logger.info('Delete file process started.',{ label: NAMESPACE });
 
         const fileId = req.params.id;
         const check = await checkBucket();
         if (check.response !== 200) {
-            logging.error('Error deleting file. bucket do not exist', { label: NAMESPACE });
+            logger.error('Error deleting file. bucket do not exist', { label: NAMESPACE });
             res.status(500).json({ message: 'Error deleting file, bucket do not exist' });
         }
 
         const deleted = await deleteFileFromS3(check.s3, fileId);
 
         if (!deleted) {
-            logging.error('Error deleting file', { label: NAMESPACE });
+            logger.error('Error deleting file', { label: NAMESPACE });
             res.status(500).json({ message: 'Error deleting file'});
         } else {
-            logging.info('File deleted successfully.', { label: NAMESPACE });
+            logger.info('File deleted successfully.', { label: NAMESPACE });
             res.status(200).json({ message: 'File deleted successfully', deleted });
         }
     } catch (err: any) {
         const errorMessage = getErrorMessage(err);
-        logging.error(`Error deleting file - ${errorMessage}`, { label: NAMESPACE });
+        logger.error(`Error deleting file - ${errorMessage}`, { label: NAMESPACE });
         res.status(500).json({ message: `Error deleting file - ${errorMessage}` });
     }
 };
 
 const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        logging.info('Download file process started.', { label: NAMESPACE });
+        logger.info('Download file process started.', { label: NAMESPACE });
 
         const fileId = req.params.id;
         const check = await checkBucket();
         if (check.response !== 200) {
-            logging.error('Error deleting file, bucket do not exist', { label: NAMESPACE });
+            logger.error('Error deleting file, bucket do not exist', { label: NAMESPACE });
             res.status(500).json({ message: 'Error deleting file, Error bucket do not exist' });
         }
 
         const fileFromS3 = await getFileFromS3(check.s3, fileId);
 
         if (!fileFromS3) {
-            logging.error('Error getting file.', { label: NAMESPACE });
+            logger.error('Error getting file.', { label: NAMESPACE });
             res.status(500).json({ message: 'Error getting file'});
         } else {
-            logging.info('File downloaded successfully.', { label: NAMESPACE });
+            logger.info('File downloaded successfully.', { label: NAMESPACE });
 
             let contentType = '';
             const fileExtension = path.extname(fileFromS3.fileName);
@@ -98,14 +98,14 @@ const downloadFile = async (req: Request, res: Response, next: NextFunction) => 
         }
     } catch (err) {
         const errorMessage = getErrorMessage(err);
-        logging.error(`Error getting file. ${ errorMessage }`, { label: NAMESPACE });
+        logger.error(`Error getting file. ${ errorMessage }`, { label: NAMESPACE });
         res.status(500).json({ message: `Error getting file. ${ errorMessage }` });
     }
 };
 
 const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     try { 
-        logging.info('Replace file process started.', { label: NAMESPACE });
+        logger.info('Replace file process started.', { label: NAMESPACE });
 
         const projectId = req.params.id;        
         const fileId = req.query.fileId;
@@ -113,28 +113,28 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
         const sessionToken = req.headers['authorization'];
 
         if (projectId === undefined || projectId === null || projectId === '') {
-            logging.error(`Project to replace file is required.`, { label: NAMESPACE });
+            logger.error(`Project to replace file is required.`, { label: NAMESPACE });
             return res.status(400).json({ message: 'Project to replace file is required' });
         }
 
         if (fileId === undefined || fileId === null || fileId === '') {
-            logging.error(`File to replace is required.`, { label: NAMESPACE });
+            logger.error(`File to replace is required.`, { label: NAMESPACE });
             return res.status(400).json({ message: 'File to replace is required' });
         }
 
         if (assetId === undefined || assetId === null || assetId === '') {
-            logging.error(`Asset to replace is required.`, { label: NAMESPACE });
+            logger.error(`Asset to replace is required.`, { label: NAMESPACE });
             return res.status(400).json({ message: 'Asset to replace is required' });
         }
     
         if (!req.files || req.files.length === 0) {
-            logging.error(`No files uploaded.`, { label: NAMESPACE });
+            logger.error(`No files uploaded.`, { label: NAMESPACE });
             return res.status(400).json({ message: 'No files uploaded.' });
         }
     
         const check = await checkBucket();
         if (check.response !== 200) {
-            logging.error('Error uploading files, bucket do not exist',{ label: NAMESPACE } );
+            logger.error('Error uploading files, bucket do not exist',{ label: NAMESPACE } );
             res.status(500).json({ message: 'Error uploading files, bucket do not exist' });
         }
     
@@ -142,11 +142,11 @@ const replaceFile = async (req: Request, res: Response, next: NextFunction) => {
     
         const filesCreated = await replaceFilesInS3(check.s3, files[0], fileId.toString(), sessionToken, projectId, assetId);
     
-        logging.info('Files replaced successfully.', { label: NAMESPACE });
+        logger.info('Files replaced successfully.', { label: NAMESPACE });
         res.status(200).json({ message: 'Files replaced successfully', files: filesCreated });
     } catch (err) {
         const errorMessage = getErrorMessage(err);
-        logging.error(`Error uploading files. ${ errorMessage }`, { label: NAMESPACE });
+        logger.error(`Error uploading files. ${ errorMessage }`, { label: NAMESPACE });
         res.status(500).json({ message: `Error uploading files. ${ errorMessage }`});
     }
 };

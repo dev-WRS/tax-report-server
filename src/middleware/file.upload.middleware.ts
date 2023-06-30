@@ -1,18 +1,17 @@
+import { logger } from '@config/logging';
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import path from 'path';
-
-import logging from '../config/logging';
 
 const fileUploadMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const upload = multer().array('files');
 
   upload(req, res, (err: any) => {
     if (err instanceof multer.MulterError) {
-      logging.error('Error uploading files.', { message: err.message });
+      logger.error('Error uploading files.', { message: err.message });
       return res.status(400).json({ message: 'Error uploading files', error: err });
     } else if (err) {
-      logging.error('Error uploading files.', { message: err.message });
+      logger.error('Error uploading files.', { message: err.message });
       return res.status(500).json({ message: 'Error uploading files', error: err.message });
     }
 
