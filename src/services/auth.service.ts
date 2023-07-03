@@ -2,7 +2,7 @@ import { LeanDocument } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { I_UserDocument, createUser, getUserByEmail, getUserByResetToken } from '@models/authentication/user.model';
+import { I_UserDocument, UserStatus, createUser, getUserByEmail, getUserByResetToken } from '@models/authentication/user.model';
 import { UserLoggedIn, UserLogin, UserResetPassword, UserToRegister, validateUserLogin,
         validateUserResetPassword, validateUserToRegister } from '@interfaces/user.interface';
 import { jwtAuthentication } from 'helper/decrypt-authentication';
@@ -71,7 +71,7 @@ export async function login(user: UserLogin): Promise<UserLoggedIn> {
             throw new Error('User not exist width this email');
         }
 
-        if (foundUser.status !== 'verified') {
+        if (foundUser.status !== UserStatus.VERIFIED) {
             throw new Error('Your account is not verified yet');
         }
 
@@ -110,7 +110,7 @@ export async function resetPassword(user: UserResetPassword): Promise<boolean> {
             throw new Error('User not exist width this email');
         }
 
-        if (foundUser.status !== 'verified') {
+        if (foundUser.status !== UserStatus.VERIFIED) {
             throw new Error('Your account is not verified yet');
         }
 
@@ -149,7 +149,7 @@ export async function forgotPassword(email: string): Promise<boolean> {
         throw new Error('User not exist width this email');
     }
 
-    if (foundUser.status !== 'verified') {
+    if (foundUser.status !== UserStatus.VERIFIED) {
         throw new Error('Your account is not verified yet');
     }
 
@@ -204,7 +204,7 @@ export async function newPassword(token: string, newPassword: string): Promise<b
             throw new Error('User not exist width this token');
         }
 
-        if (foundUser.status !== 'verified') {
+        if (foundUser.status !== UserStatus.VERIFIED) {
             throw new Error('Your account is not verified yet');
         }
 
@@ -245,11 +245,11 @@ export async function confirmRegistry(token: string): Promise<boolean> {
             throw new Error('User not exist width this token');
         }
 
-        if (foundUser.status === 'verified') {
+        if (foundUser.status === UserStatus.VERIFIED) {
             throw new Error('Your account is verified already. Please login');
         }
 
-        foundUser.status = 'verified';
+        foundUser.status = UserStatus.VERIFIED;
         foundUser.updatedAt = new Date();
         await foundUser.save();
 

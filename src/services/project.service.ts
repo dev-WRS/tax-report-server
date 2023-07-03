@@ -80,7 +80,7 @@ export async function createProjectInputFileService(fileCreate: I_ProjectFileCre
     }
 }
 
-export async function deleteProjectService(projectId: string): Promise<void> {
+export async function deleteProjectService(projectId: string): Promise<boolean> {
     try {
         const projectToDelete = await ProjectModel.findById(projectId);
         if (!projectToDelete) {
@@ -107,6 +107,8 @@ export async function deleteProjectService(projectId: string): Promise<void> {
         await Asset.findByIdAndDelete(projectToDelete.projectAssets);
 
         await ProjectModel.findByIdAndDelete(projectId);
+
+        return true
     } catch (error) {
         throw error;
     }

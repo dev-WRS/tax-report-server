@@ -78,7 +78,7 @@ const updateAssetProject = async (req: Request, res: Response, next: NextFunctio
     } catch (err: any) {
         const errorMessage = getErrorMessage(err);
         logger.error(`Error updating Project asset: ${errorMessage}`, { label: NAMESPACE });
-        res.status(500).json({ message: `Error Error updating Project asset ${errorMessage}` });
+        res.status(500).json({ message: `Error updating Project asset ${errorMessage}` });
     }
 };
 
@@ -86,8 +86,8 @@ const deleteProject = async (req: Request, res: Response, next: NextFunction) =>
     try {
         const projectId = req.params.id;  
         logger.info('Delete Project', { label: NAMESPACE });
-        const project = await projectServices.deleteProjectService(projectId);
-        res.status(200).json({ project: project });
+        const result = await projectServices.deleteProjectService(projectId);
+        res.status(200).json({ result });
     } catch (err: any) {
         const errorMessage = getErrorMessage(err);
         logger.error(`Error deleting Project: ${errorMessage}`, { label: NAMESPACE });

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import * as jwt from 'jsonwebtoken';
 
 import config from '@config/config';
+import { Role } from "@models/authentication/user.model";
 
 export const checkRoleAuthorize = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -14,7 +15,7 @@ export const checkRoleAuthorize = (req: Request, res: Response, next: NextFuncti
         let jwtPayload = <any>jwt.verify(headerToken.slice(7), config.secrets.jwtSecret);
         res.locals.jwtPayload = jwtPayload;
 
-         if (jwtPayload && jwtPayload.role !== 'admin') {
+         if (jwtPayload && jwtPayload.role !== Role.ADMIN) {
             return res.status(403).send('Insufficient permissions');
         }
 

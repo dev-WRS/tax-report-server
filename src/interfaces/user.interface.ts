@@ -1,16 +1,18 @@
+import { Role } from "@models/authentication/user.model";
+
 export interface UserToRegister {
     fullName: string;
     userName: string;
     email: string;
     password: string;
-    role: 'admin' | 'user' | undefined;
+    role: Role;
 }
 
 export interface UserRegistered {
     fullName: string;
     userName: string;
     email: string;
-    role: 'admin' | 'user' | undefined;
+    role: Role;
 }
 
 export interface UserLogin {
@@ -29,8 +31,14 @@ export interface UserLoggedIn{
     email: string;
     fullName: string;
     userName: string;
-    role: 'admin' | 'user' | undefined;
+    role: Role;
     token: string;
+}
+
+export interface UserToUpdate {
+    fullName: string;
+    userName: string;
+    role: Role;
 }
 
 export function validateUserToRegister(user: UserToRegister): boolean {

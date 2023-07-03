@@ -1,5 +1,17 @@
 import mongoose from 'mongoose';
 
+export enum Role {
+    ADMIN = 'admin',
+    USER = 'user',
+    SUPER_ADMIN = 'super_admin'
+}
+
+export enum UserStatus {
+    VERIFIED = 'verified',
+    UNVERIFIED = 'unverified',
+    DISABLED = 'disabled'
+}
+
 export interface I_UserDocument extends mongoose.Document {
     email: string;
     fullName: string;
@@ -9,8 +21,8 @@ export interface I_UserDocument extends mongoose.Document {
         sessionToken: string;
         resetToken: string;
     };
-    role: 'admin' | 'user' | undefined;
-    status: 'verified' | 'unverified' | 'disabled';
+    role: Role;
+    status: UserStatus;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -24,11 +36,11 @@ const UserSchema: mongoose.Schema<I_UserDocument> = new mongoose.Schema({
         sessionToken: { type: String, select: false },
         resetToken: { type: String, select: false }
     },
-    role: { type: String, enum: ['admin', 'user'], default: 'user' },
-    status: { type: String, enum: ['verified', 'unverified', 'disabled'], default: 'unverified' },
+    role: { type: String, enum: Role, default: 'user' },
+    status: { type: String, enum: UserStatus, default: 'unverified' },
     createdAt: Date,
     updatedAt: Date
-}); 
+});
 
 export const UserModel = mongoose.model<I_UserDocument>('User', UserSchema);
 

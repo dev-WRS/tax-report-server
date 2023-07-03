@@ -11,6 +11,7 @@ import authRouter from '@routes/auth.route';
 import mboxFilesHandlerRoute from '@routes/mboxFilesHandler.route';
 import filesHandlerRoute from '@routes/filesHandler.route';
 import projectRouter from '@routes/project.route';
+import userRouter from '@routes/user.router';
 import { logger } from '@config/logging';
 
 const NAMESPACE = 'Server';
@@ -63,3 +64,4 @@ app.use('/auth', authRouter);
 app.use('/mbox', mboxFilesHandlerRoute);
 app.use('/files', filesHandlerRoute);
 app.use('/projects', projectRouter)
+app.use('/users', userRouter)
